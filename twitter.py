@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import unquote
 import csv
 
+
 class Tweet:
 
     def __init__(self, query):
@@ -23,9 +24,6 @@ class Tweet:
 
     def count(self, period, sleep_time=3):  # period = date.year2013, date.month2013_1
         driver = webdriver.Chrome()
-        file2 = open('number.tsv', 'a', encoding='utf-8')
-        writer2 = csv.writer(file2, delimiter='\t', lineterminator='\n')
-
         for i in range(len(period) - 1):
 
             since = period[i]
@@ -33,6 +31,8 @@ class Tweet:
 
             file1 = open('tweet{}.tsv'.format(since), 'w', encoding='utf-8')
             writer1 = csv.writer(file1, delimiter='\t', lineterminator='\n')
+            file2 = open('number.tsv', 'a', encoding='utf-8')
+            writer2 = csv.writer(file2, delimiter='\t', lineterminator='\n')
 
             url = "https://twitter.com/search?f=tweets&q={}%20since%3A{}%20until%3A{}".format(self.query, since, until)
             #url_with_lang = "https://twitter.com/search?f=tweets&q={}%20since%3A{}%20until%3A{}%20lang%3Ath".format(self.query, since, until)
@@ -70,6 +70,7 @@ class Tweet:
             file2.write(since + ' ' + str(len(id_html)))
             file2.write('\n')
             file1.close()
+            file2.close()
 
 
         """
@@ -83,9 +84,7 @@ class Tweet:
             writer2.writerow(line)
         """
 
-
         driver.close()
-        file2.close()
+
+
 nok = Tweet('นก')
-
-
