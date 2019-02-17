@@ -7,7 +7,7 @@ from urllib.parse import unquote
 import csv
 
 
-def scrape(month, scroll=10, sleep_time=2):  # month = date.month2013_1
+def scrape(month, scroll=4, sleep_time=2):  # month = date.month2013_1
     driver = webdriver.Chrome()
 
     # loop for each day
@@ -28,7 +28,7 @@ def scrape(month, scroll=10, sleep_time=2):  # month = date.month2013_1
         tweet_one_day = 0  # initialize
         for j in range(24):  # date.time = list of 24h
 
-            if j == 23:  # override "since:2013-1-1_23:00:00_ICT until:2013-1-2_0:00:00_ICT"
+            if j == 23:  # override "since:2013-1-1_23:35:00_ICT until:2013-1-2_0:35:00_ICT"
                 until = month[i+1]
 
             time1 = date.time[j]
@@ -43,27 +43,29 @@ def scrape(month, scroll=10, sleep_time=2):  # month = date.month2013_1
                 driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")  # scroll to the bottom
                 sleep(sleep_time)
 
+            # scraping
             id_compile = re.compile('tweet js-stream-tweet .*')
-            date_compile = re.compile('_timestamp .*')
             tweet_compile = re.compile('TweetTextSize .*')
-
             soup = BeautifulSoup(driver.page_source, "html.parser")  # get html
             id_html = soup.find_all('div', class_=id_compile)  # get user id and tweet id
-            date_html = soup.find_all('span', class_=date_compile)  # get the date
             tweet_html = soup.find_all('p', class_=tweet_compile)  # get tweet and hash tag
             tweet_one_day += len(id_html)
 
-            for k in range(len(id_html)):
-                user_id = id_html[k].get('data-permalink-path').split('/status/')[0].strip('/')
-                tweet_id = id_html[k].get('data-permalink-path').split('/status/')[-1]
-                tweet_date = date_html[k].text.replace('月', '/').replace('年', '/').replace('日', '')
+            # check banned user
+            id_html_checked = [a for a in id_html if '違反しているため' not in a.text]
+
+            for k in range(len(id_html_checked)):
+                user_id = id_html_checked[k].get('data-permalink-path').split('/status/')[0].strip('/')
+                tweet_id = id_html_checked[k].get('data-permalink-path').split('/status/')[-1]
                 tweet = tweet_html[k].text
+                """
                 if tweet_html[k].find('a') is not None:
                     hashtags = tweet_html[k].find_all('a')
                     hashtag = [unquote(tag.get('href').split('/hashtag/')[-1].strip('?src=hash')) for tag in hashtags]
                 else:
                     hashtag = 'None'
-                line = [user_id, tweet_id, tweet_date, tweet, hashtag]
+                """
+                line = [user_id, tweet_id, tweet]
                 writer1.writerow(line)
 
         file2.write(since + '\t' + str(tweet_one_day))

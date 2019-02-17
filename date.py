@@ -1,4 +1,4 @@
-time = ['{}:00:00'.format(i) for i in range(0, 24)] + ['0:00:00']
+time = ['{}:35:00'.format(i) for i in range(0, 24)] + ['0:35:00']
 
 year2010 = ['2010-{}-1'.format(i) for i in range(1, 13)] + ['2011-1-1']
 year2011 = ['2011-{}-1'.format(i) for i in range(1, 13)] + ['2012-1-1']
