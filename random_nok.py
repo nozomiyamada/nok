@@ -4,10 +4,21 @@ import re
 import date
 from bs4 import BeautifulSoup
 import csv
+from os import makedirs
 
 
-def nok(month, scroll=2, sleep_time=2):  # month = date.month2013_1
-    driver = webdriver.Chrome()
+def nok(month, scroll=10, sleep_time=2):  # month = date.month2013_10
+    """
+    example:
+        
+    month = date.month2013_10 = ['2013-10-1', '2013-10-2',...]
+    month[0].rsplit('-', 1) = ['2013-10', '1']
+    path = './tweet_nok/nok2013-10'
+    """
+    driver = webdriver.Firefox()
+    sleep(3)
+    path = './tweet_nok2/nok' + month[0].rsplit('-', 1)[0]
+    makedirs(path)
 
     # loop for each day
     for i in range(len(month) - 1):
@@ -16,19 +27,22 @@ def nok(month, scroll=2, sleep_time=2):  # month = date.month2013_1
         until = month[i]
 
         # make file for saving tweets in one day
-        file1 = open('nok{}.tsv'.format(since), 'w', encoding='utf-8')
+        file1 = open('{}/nok{}.tsv'.format(path, since), 'w', encoding='utf-8')
         writer1 = csv.writer(file1, delimiter='\t', lineterminator='\n')
 
         # record total tweet numbers of each day
-        file2 = open('number_nok.tsv', 'a', encoding='utf-8')
+        file2 = open('number_nok2.tsv', 'a', encoding='utf-8')
         writer2 = csv.writer(file2, delimiter='\t', lineterminator='\n')
 
-        # loop for every 4 other hour in one day (0, 4, 8 ...)
+        # loop for every hour in one day
         tweet_one_day = 0  # initialize
-        for j in range(6):  # date.time = list of 24h
+        for j in range(24):  # date.time = list of 24h
+            
+            if j == 23:  # override "since:2013-1-1_23:35:00_ICT until:2013-1-2_0:35:00_ICT"
+                until = month[i+1]
 
-            time1 = date.time[4 * j]
-            time2 = date.time[4 * j + 3]
+            time1 = date.time[j]
+            time2 = date.time[j+1]
 
             # search url e.g. "นก since:2013-1-1_16:25:00_ICT until:2013-1-1_17:25:00_ICT"
             url = "https://twitter.com/search?f=tweets&q=นก%20since%3A{}_{}_ICT%20until%3A{}_{}_ICT".format(since, time1, until, time2)
@@ -47,8 +61,8 @@ def nok(month, scroll=2, sleep_time=2):  # month = date.month2013_1
             tweet_html = soup.find_all('p', class_=tweet_compile)  # get tweet and hash tag
             tweet_one_day += len(id_html)
 
-            # check banned user
-            id_html_checked = [a for a in id_html if '違反しているため' not in a.text]
+            # check banned tweet
+            id_html_checked = [a for a in id_html if ('違反しているため' not in a.text and 'because it violated' not in a.text)]
 
             for k in range(len(id_html_checked)):
                 user_id = id_html_checked[k].get('data-permalink-path').split('/status/')[0].strip('/')
