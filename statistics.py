@@ -1,8 +1,9 @@
-from pythainlp import word_tokenize
-import glob
-import csv
-import re
 import collections
+import csv
+import glob
+import re
+from pythainlp import word_tokenize
+
 
 def trim(text):
     """
@@ -121,7 +122,27 @@ def count_word(coll, year, ba=0):  # before=0, after=1
                                 if i != 0 and tweet[i-1] == coll:
                                     count += 1
                             elif ba == 1: # search after word
-                                if i != len(tweet)-1 and (tweet[i+1] == coll or tweet[i+1] == 'อีกแล้ว'):
+                                if i != len(tweet) - 1 and tweet[i + 1] == coll:
+                                #if i != len(tweet)-1 and (tweet[i+1] == coll or tweet[i+1] == 'อีกแล้ว'):
                                     count += 1
         #print('{}-{}'.format(year, month) +'\t' + str(count))
         print(count)
+
+
+def population(month):  # month = '2016-1'
+    
+    # make the list of files 
+    files = glob.glob("./tweet_nok2/nok{}/*.tsv".format(month))
+    list_tweeters = []
+    for i, file in enumerate(files):
+        with open(file, 'r', encoding='utf-8') as f:
+            tweeters = set([])
+            for tweet in csv.reader(f, delimiter='\t'):
+                tweeters.add(tweet[0])
+            list_tweeters.append(list(tweeters))
+        if i > 0:
+            try:
+                print(len(list_tweeters[-1]))
+                print(len(list_tweeters[-2]) * len(list_tweeters[-1]) / len(set(list_tweeters[-2]).intersection(set(list_tweeters[-1]))))
+            except:
+                pass
