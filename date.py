@@ -1,4 +1,9 @@
-time = ['{}:10:00'.format(i) for i in range(0, 24)] + ['0:10:00']
+# every 10 minute in one hour
+time = []
+for i in range(0,24):
+    for j in range(0,6):
+        time.append('{}:{}5:00'.format(i,j))
+time.append('0:05:00')
 
 year2010 = ['2010-{}-1'.format(i) for i in range(1, 13)] + ['2011-1-1']
 year2011 = ['2011-{}-1'.format(i) for i in range(1, 13)] + ['2012-1-1']
@@ -113,3 +118,7 @@ month2018_9 = ['2018-9-{}'.format(i) for i in range(1, 31)] + ['2018-10-1']
 month2018_10 = ['2018-10-{}'.format(i) for i in range(1, 32)] + ['2018-11-1']
 month2018_11 = ['2018-11-{}'.format(i) for i in range(1, 31)] + ['2018-12-1']
 month2018_12 = ['2018-12-{}'.format(i) for i in range(1, 32)] + ['2019-1-1']
+
+month2019_1 = ['2019-1-{}'.format(i) for i in range(1, 32)] + ['2019-2-1']
+month2019_2 = ['2019-2-{}'.format(i) for i in range(1, 29)] + ['2019-3-1']
+month2019_3 = ['2019-3-{}'.format(i) for i in range(1, 32)] + ['2019-4-1']
