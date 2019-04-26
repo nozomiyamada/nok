@@ -8,7 +8,7 @@ import csv
 from os import makedirs
 
 
-def scrape(month, mkdir=False, scroll=10, sleep_time=1):  # month = date.month2013_1
+def scrape(month, mkdir=False, scroll=10, sleep_time=0.5):  # month = date.month2013_1
     """
     example:
         
@@ -17,8 +17,8 @@ def scrape(month, mkdir=False, scroll=10, sleep_time=1):  # month = date.month20
     path = './tweet/2013-10'
     """
     driver = webdriver.Firefox()
-    sleep(3)
-    path = './tweet/tweet' + month[0].rsplit('-', 1)[0]
+    sleep(1)
+    path = '/Users/Nozomi/files/tweet/tweet' + month[0].rsplit('-', 1)[0]
     if mkdir == True:
         makedirs(path)
     
@@ -36,7 +36,6 @@ def scrape(month, mkdir=False, scroll=10, sleep_time=1):  # month = date.month20
         writer = csv.writer(file, delimiter='\t', lineterminator='\n')
 
         # loop for each hour in one day
-        tweet_one_day = 0  # initialize
         for j in range(144):  # date.time = each 10 minute * 24hours
 
             if j == 143:  # override "since:2013-1-1_23:55:00_ICT until:2013-1-2_0:05:00_ICT"
@@ -60,7 +59,6 @@ def scrape(month, mkdir=False, scroll=10, sleep_time=1):  # month = date.month20
             soup = BeautifulSoup(driver.page_source, "html.parser")  # get html
             id_html = soup.find_all('div', class_=id_compile)  # get user id and tweet id
             tweet_html = soup.find_all('p', class_=tweet_compile)  # get tweet and hash tag
-            tweet_one_day += len(id_html)
 
             # check banned user
             id_html_checked = [a for a in id_html if ('違反しているため' not in a.text and 'because it violates' not in a.text and 'has been withheld' not in a.text and 'This Tweet is unavailable' not in a.text)]

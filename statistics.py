@@ -2,6 +2,7 @@ import collections
 import csv
 import glob
 import re
+import numpy as np
 from pythainlp import word_tokenize
 
 
@@ -29,7 +30,7 @@ def trim(text):
 
 def tokenize(year_month):
     # get file names
-    files = glob.glob('./tweet_nok2/nok{}/nok*.tsv'.format(year_month))
+    files = glob.glob('/Users/Nozomi/files/tweet_nok/nok{}/nok*.tsv'.format(year_month))
 
     for file in files:
         print(file)
@@ -43,9 +44,9 @@ def tokenize(year_month):
         s.close()
 
 
-def tokenize_test(filedate):  # 2012-2-15
+def tokenize_one(filedate):  # 2012-2-15
 
-    filepath = "./tweet_nok2/nok{}/nok{}.tsv".format(filedate.rsplit('-', 1)[0], filedate)
+    filepath = "/Users/Nozomi/files/tweet_nok/nok{}/nok{}.tsv".format(filedate.rsplit('-', 1)[0], filedate)
     savename = filepath.rsplit('/', 1)[0] + '/tokenized_' + filepath.rsplit('/', 1)[1]
     f = open(filepath, 'r', encoding='utf-8')
     s = open(savename, 'w', encoding='utf-8')
@@ -61,7 +62,7 @@ def tokenize_test(filedate):  # 2012-2-15
 
 def count(year_month):
     # get file names
-    files = glob.glob("./tweet_nok2/nok{}/tokenized_*.tsv".format(year_month))
+    files = glob.glob("/Users/Nozomi/files/tweet_nok/nok{}/tokenized_*.tsv".format(year_month))
 
     count_before = collections.Counter()
     count_after = collections.Counter()
@@ -106,7 +107,7 @@ def count_word(coll, year, ba=0):  # before=0, after=1
         count = 0
 
         # get file names
-        files = glob.glob("./tweet_nok2/nok{}-{}/tokenized_*.tsv".format(year, month))
+        files = glob.glob("/Users/Nozomi/files/tweet_nok/nok{}-{}/tokenized_*.tsv".format(year, month))
 
         # loop for file
         for file in files:
@@ -129,10 +130,34 @@ def count_word(coll, year, ba=0):  # before=0, after=1
         print(count)
 
 
+def mai(year_month):
+    """
+    function for measuring distance between mai and nok
+    """
+    # get file names
+    files = glob.glob("/Users/Nozomi/files/tweet_nok/nok{}/tokenized_*.tsv".format(year_month))
+
+    # loop for file
+
+    minus1 = 0
+    minus2 = 0
+
+    for file in files:
+        with open(file, 'r', encoding='utf-8') as f:
+            for tweet in csv.reader(f, delimiter='\t'): # loop for tokenized tweet
+                for i, word in enumerate(tweet):
+                    if word == 'นก':
+                        if i > 0 and tweet[i-1] == 'ไม่':
+                            minus1 += 1
+                        if i > 1 and tweet[i-2] == 'ไม่':
+                            minus2 += 1
+    print(minus1, minus2)
+
+
 def population(month):  # month = '2016-1'
     
     # make the list of files 
-    files = glob.glob("./tweet_nok2/nok{}/*.tsv".format(month))
+    files = glob.glob("/Users/Nozomi/files/tweet_nok/nok{}/*.tsv".format(month))
     list_tweeters = []
     for i, file in enumerate(files):
         with open(file, 'r', encoding='utf-8') as f:
@@ -146,3 +171,35 @@ def population(month):  # month = '2016-1'
                 print(len(list_tweeters[-2]) * len(list_tweeters[-1]) / len(set(list_tweeters[-2]).intersection(set(list_tweeters[-1]))))
             except:
                 pass
+
+
+def get_pmi(year_month, window=1):
+    """
+    function for measuring pmi between mai and nok
+    """
+    # get file names
+    files = glob.glob("/Users/Nozomi/files/tweet_nok/nok{}/tokenized_*.tsv".format(year_month))
+
+    # loop for file
+
+    nok = 0
+    mai = 0
+    mainok = 0
+    total = 0
+
+    for file in files:
+        with open(file, 'r', encoding='utf-8') as f:
+            for tweet in csv.reader(f, delimiter='\t'): # loop for tokenized tweet
+                total += 1
+                if 'ไม่' in tweet:
+                    mai += 1
+                for i, word in enumerate(tweet):
+                    if word == 'นก':
+                        if i >= window and 'ไม่' in tweet[i-window:i]:
+                            mainok += 1
+
+    if nok != 0 and mai != 0:
+        pmi = (mainok/mai)
+        print(pmi)
+    else:
+        print(0)
