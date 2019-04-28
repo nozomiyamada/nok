@@ -8,7 +8,7 @@ import csv
 from os import makedirs
 
 
-def nok(month, scroll=3, sleep_time=0.5):  # month = date.month2013_10
+def nok(month, scroll=3, sleep_time=1):  # month = date.month2013_10
     """
     example:
 
@@ -18,8 +18,9 @@ def nok(month, scroll=3, sleep_time=0.5):  # month = date.month2013_10
     """
     driver = webdriver.Firefox()
     sleep(1)
-    path = '/Users/Nozomi/files/khan/' + month[0].rsplit('-', 1)[0]
-    makedirs(path)
+    path = '/Users/Nozomi/files/tweet_nok/nok' + month[0].rsplit('-', 1)[0]
+    #path = '/Users/Nozomi/files/khan/' + month[0].rsplit('-', 1)[0]
+    #makedirs(path)
 
     # loop for each day
     for i in range(len(month) - 1):
@@ -27,8 +28,13 @@ def nok(month, scroll=3, sleep_time=0.5):  # month = date.month2013_10
         since = month[i]  # the same day, if the time is 23:00, override 'until'
         until = month[i]
 
-        # make file for saving tweets in one day
-        file = open('{}/{}.tsv'.format(path, since), 'w', encoding='utf-8')
+        # open file once for making tweet ID list
+        read_file = open('{}/nok{}.tsv'.format(path, since), 'r', encoding='utf-8')
+        id_list = [line[1] for line in csv.reader(read_file, delimiter='\t')]
+        read_file.close()
+
+        # open file again for saving tweets in one day
+        file = open('{}/nok{}.tsv'.format(path, since), 'a', encoding='utf-8')
         writer = csv.writer(file, delimiter='\t', lineterminator='\n')
 
         # loop for every hour in one day
@@ -42,7 +48,7 @@ def nok(month, scroll=3, sleep_time=0.5):  # month = date.month2013_10
             time2 = date.time30[j+1]
 
             # search url e.g. "นก since:2013-1-1_16:25:00_ICT until:2013-1-1_17:25:00_ICT"
-            url = "https://twitter.com/search?f=tweets&q=คัน%20since%3A{}_{}_ICT%20until%3A{}_{}_ICT".format(since, time1, until, time2)
+            url = "https://twitter.com/search?f=tweets&q=นก%20since%3A{}_{}_ICT%20until%3A{}_{}_ICT".format(since, time1, until, time2)
             driver.get(url)
 
             # scroll k times
@@ -73,11 +79,26 @@ def nok(month, scroll=3, sleep_time=0.5):  # month = date.month2013_10
                     hashtag = 'None'
                 """
                 line = [user_id, tweet_id, tweet]
-                writer.writerow(line)
+                if tweet_id not in id_list:
+                    writer.writerow(line)
 
         file.close()
 
     driver.close()
 
+def sort(year_month_day):  # year_month_day = '2015-1-1'
+    year_month = year_month_day.rsplit('-', 1)[0]
+    path1 = '/Users/Nozomi/files/tweet_nok/nok{}/nok{}.tsv'.format(year_month, year_month_day)
+    path2 = '/Users/Nozomi/files/tweet_nok/nok{}/nok{}_sort.tsv'.format(year_month, year_month_day)
+    read_file = open(path1, 'r', encoding='utf-8')
+    save_file = open(path2, 'w', encoding='utf-8')
+    writer = csv.writer(save_file, delimiter='\t', lineterminator='\n')
 
+    id_list = []
+    for line in csv.reader(read_file, delimiter='\t'):
+        if line[1] not in id_list:
+            writer.writerow(line)
+            id_list.append(line[1])
 
+    read_file.close()
+    save_file.close()

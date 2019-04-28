@@ -9,8 +9,8 @@ time.append('0:00:00')
 time30 = []
 for i in range(0,24):
     for j in range(0,2):
-        time30.append('{}:{}0:00'.format(i, 3*j))
-time30.append('0:00:00')
+        time30.append('{}:{}3:00'.format(i, 3*j))
+time30.append('0:03:00')
 
 
 year2010 = ['2010-{}-1'.format(i) for i in range(1, 13)] + ['2011-1-1']

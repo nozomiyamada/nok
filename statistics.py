@@ -60,7 +60,34 @@ def tokenize_one(filedate):  # 2012-2-15
     s.close()
 
 
-def count(year_month):
+def count_tweet(year_month):
+    files = glob.glob("/Users/Nozomi/files/tweet_nok/nok{}/nok*".format(year_month))
+    files2 = glob.glob("/Users/Nozomi/files/tweet/tweet{}/*.tsv".format(year_month))
+    tweet_count = 0
+    tweet_count2 = 0
+    for file in files:
+        with open(file, 'r', encoding='utf-8') as f:
+            tweet_count += len(list(csv.reader(f, delimiter='\t')))
+    for file in files2:
+        try:
+            with open(file, 'r', encoding='utf-8') as f:
+                tweet_count2 += len(list(csv.reader(f, delimiter='\t')))
+        except UnicodeDecodeError:
+            pass
+    return tweet_count, tweet_count2
+
+def all_tweets(year):
+    tweet_count = 0
+    tweet_count2 = 0
+    for i in range(1,13):
+        a, b = count_tweet(year + '-{}'.format(i))
+        tweet_count += a
+        tweet_count2 += b
+    print(tweet_count)
+    print(tweet_count2)
+
+
+def count_col(year_month):
     # get file names
     files = glob.glob("/Users/Nozomi/files/tweet_nok/nok{}/tokenized_*.tsv".format(year_month))
 
@@ -173,12 +200,35 @@ def population(month):  # month = '2016-1'
                 pass
 
 
+
+def trim(text):
+    text = re.sub(r'([ก-๛a-zA-Z])\1{2}\1+', r'\1', text)
+    text = re.sub(r'นกนก(นก)+', 'นกนกนก', text)
+    text = re.sub(r'([ก-๛a-zA-Z]+)\1{2}\1+', r'\1', text)
+
+    return text
+
+def tokenize_random(month):  # month = '2015-4'
+    # get file names
+    files = glob.glob('/Users/Nozomi/files/tweet/tweet{}/tweet*.tsv'.format(month))
+    save_file = open('/Users/Nozomi/files/tweet/tweet{}/random_{}.tsv'.format(month, month), 'w', encoding='utf-8')
+    writer = csv.writer(save_file, delimiter=' ', lineterminator='\n')
+
+    for file in files:
+        print(file)  # print current file
+        with open(file, 'r', encoding='utf-8') as f:
+            tokenized = [word_tokenize(trim(tweet[-1])) for tweet in csv.reader(f, delimiter='\t')]
+            writer.writerows(tokenized)
+
+    save_file.close()
+
+
 def get_pmi(year_month, window=1):
     """
     function for measuring pmi between mai and nok
     """
     # get file names
-    files = glob.glob("/Users/Nozomi/files/tweet_nok/nok{}/tokenized_*.tsv".format(year_month))
+    files = glob.glob("/Users/Nozomi/files/tweet_nok/nok{}/random_*.tsv".format(year_month))
 
     # loop for file
 
@@ -193,13 +243,15 @@ def get_pmi(year_month, window=1):
                 total += 1
                 if 'ไม่' in tweet:
                     mai += 1
+                if 'นก' in tweet:
+                    nok += 1
                 for i, word in enumerate(tweet):
                     if word == 'นก':
                         if i >= window and 'ไม่' in tweet[i-window:i]:
                             mainok += 1
 
     if nok != 0 and mai != 0:
-        pmi = (mainok/mai)
+        pmi = (mainok*total/mai/nok)
         print(pmi)
     else:
         print(0)
