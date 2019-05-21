@@ -8,7 +8,7 @@ import csv
 from os import makedirs
 
 
-def scrape(month, mkdir=False, scroll=10, sleep_time=0.5):  # month = date.month2013_1
+def scrape(month, append=True, scroll=20, sleep_time=0.5):  # month = date.month2013_1
     """
     example:
         
@@ -19,8 +19,7 @@ def scrape(month, mkdir=False, scroll=10, sleep_time=0.5):  # month = date.month
     driver = webdriver.Firefox()
     sleep(1)
     path = '/Users/Nozomi/files/tweet/tweet' + month[0].rsplit('-', 1)[0]
-    if mkdir == True:
-        makedirs(path)
+    #makedirs(path)
     
     """
     loop for each day
@@ -31,9 +30,18 @@ def scrape(month, mkdir=False, scroll=10, sleep_time=0.5):  # month = date.month
         since = month[i]  # since and until is day: 2015-1-15
         until = month[i]  # if the time is 23:50, override 'until' below
 
-        # make file for saving tweets in one day
-        file = open('{}/tweet{}.tsv'.format(path, since), 'w', encoding='utf-8')
+        if append == True:
+            # open file once for making tweet ID list
+            read_file = open('{}/tweet{}.tsv'.format(path, since), 'r', encoding='utf-8')
+            id_list = [line[1] for line in csv.reader(read_file, delimiter='\t')]
+            read_file.close()
+
+            # open file again for saving tweets in one day
+            file = open('{}/tweet{}.tsv'.format(path, since), 'a', encoding='utf-8')
+        else:
+            file = open('{}/tweet{}.tsv'.format(path, since), 'w', encoding='utf-8')
         writer = csv.writer(file, delimiter='\t', lineterminator='\n')
+
 
         # loop for each hour in one day
         for j in range(144):  # date.time = each 10 minute * 24hours
@@ -75,7 +83,11 @@ def scrape(month, mkdir=False, scroll=10, sleep_time=0.5):  # month = date.month
                     hashtag = 'None'
                 """
                 line = [user_id, tweet_id, tweet]
-                writer.writerow(line)
+                if append == True:
+                    if tweet_id not in id_list:
+                        writer.writerow(line)
+                else:
+                    writer.writerow(line)
         file.close()
 
     driver.close()

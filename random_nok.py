@@ -8,7 +8,8 @@ import csv
 from os import makedirs
 
 
-def nok(month, scroll=3, sleep_time=1):  # month = date.month2013_10
+def nok(month, append=True, scroll=8
+        , sleep_time=0.5):  # month = date.month2013_10
     """
     example:
 
@@ -16,7 +17,7 @@ def nok(month, scroll=3, sleep_time=1):  # month = date.month2013_10
     month[0].rsplit('-', 1) = ['2013-10', '1']
     path = './tweet_nok/nok2013-10'
     """
-    driver = webdriver.Firefox()
+    driver = webdriver.Chrome()
     sleep(1)
     path = '/Users/Nozomi/files/tweet_nok/nok' + month[0].rsplit('-', 1)[0]
     #path = '/Users/Nozomi/files/khan/' + month[0].rsplit('-', 1)[0]
@@ -28,13 +29,16 @@ def nok(month, scroll=3, sleep_time=1):  # month = date.month2013_10
         since = month[i]  # the same day, if the time is 23:00, override 'until'
         until = month[i]
 
-        # open file once for making tweet ID list
-        read_file = open('{}/nok{}.tsv'.format(path, since), 'r', encoding='utf-8')
-        id_list = [line[1] for line in csv.reader(read_file, delimiter='\t')]
-        read_file.close()
+        if append == True:
+            # open file once for making tweet ID list
+            read_file = open('{}/nok{}.tsv'.format(path, since), 'r', encoding='utf-8')
+            id_list = [line[1] for line in csv.reader(read_file, delimiter='\t')]
+            read_file.close()
 
-        # open file again for saving tweets in one day
-        file = open('{}/nok{}.tsv'.format(path, since), 'a', encoding='utf-8')
+            # open file again for saving tweets in one day
+            file = open('{}/nok{}.tsv'.format(path, since), 'a', encoding='utf-8')
+        else:
+            file = open('{}/nok{}.tsv'.format(path, since), 'w', encoding='utf-8')
         writer = csv.writer(file, delimiter='\t', lineterminator='\n')
 
         # loop for every hour in one day
@@ -79,7 +83,10 @@ def nok(month, scroll=3, sleep_time=1):  # month = date.month2013_10
                     hashtag = 'None'
                 """
                 line = [user_id, tweet_id, tweet]
-                if tweet_id not in id_list:
+                if append == True:
+                    if tweet_id not in id_list:
+                        writer.writerow(line)
+                else:
                     writer.writerow(line)
 
         file.close()
