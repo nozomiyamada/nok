@@ -148,3 +148,4 @@ def cos_sim(v1, v2):
 def norm(vector):
     return round(np.linalg.norm(vector), 4)
 
+
