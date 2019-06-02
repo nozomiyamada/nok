@@ -29,34 +29,38 @@ def trim(text):
 
 
 def tokenize_nok(year_month):
+    """
+    :param year_month: str '2018-1'
+    :return: tokenize all tweets in the month and combined into one file
+    """
     # get file names
     files = glob.glob('/Users/Nozomi/files/tweet_nok/nok{}/nok*.tsv'.format(year_month))
     save_file = open('/Users/Nozomi/files/tweet_nok/nok{}/tokenized_{}.tsv'.format(year_month, year_month), 'w', encoding='utf-8')
+    writer = csv.writer(save_file, delimiter='\t', lineterminator='\n')
 
     for file in files:
-        print(file)
-        f = open(file, 'r', encoding='utf-8')
-        tokenized = [word_tokenize(trim(tweet[-1]), keep_whitespace=True) for tweet in csv.reader(f, delimiter='\t')]
-        writer = csv.writer(save_file, delimiter='\t', lineterminator='\n')
-        writer.writerows(tokenized)
-        f.close()
+        print(file)  # output current file
+        with open(file, 'r', encoding='utf-8') as f:
+            tokenized = [word_tokenize(trim(tweet[-1]), keep_whitespace=True) for tweet in csv.reader(f, delimiter='\t')]
+            writer.writerows(tokenized)
 
     save_file.close()
 
-def tokenize_random(month):  # month = '2015-4'
+def tokenize_random(month):
+    """
+    :param year_month: str '2018-1'
+    :return: tokenize all tweets in the month and combined into one file
+    """
     # get file names
     files = glob.glob('/Users/Nozomi/files/tweet/tweet{}/tweet*.tsv'.format(month))
     save_file = open('/Users/Nozomi/files/tweet/tweet{}/random_{}.tsv'.format(month, month), 'w', encoding='utf-8')
     writer = csv.writer(save_file, delimiter='\t', lineterminator='\n')
 
     for file in files:
-        print(file)  # print current file
-        try:
-            with open(file, 'r', encoding='utf-8') as f:
-                tokenized = [word_tokenize(trim(tweet[-1]), keep_whitespace=True) for tweet in csv.reader(f, delimiter='\t')]
-                writer.writerows(tokenized)
-        except UnicodeDecodeError:
-            pass
+        print(file)  # output current file
+        with open(file, 'r', encoding='utf-8') as f:
+            tokenized = [word_tokenize(trim(tweet[-1]), keep_whitespace=True) for tweet in csv.reader(f, delimiter='\t')]
+            writer.writerows(tokenized)
 
     save_file.close()
 
@@ -78,24 +82,27 @@ def tokenize_nok_one(filedate):  # 2012-2-15
 
 
 def count_tweet(year_month):
-    files = glob.glob("/Users/Nozomi/files/tweet_nok/nok{}/nok*".format(year_month))
-    files2 = glob.glob("/Users/Nozomi/files/tweet/tweet{}/tweet*".format(year_month))
-    tweet_count = 0
-    tweet_count2 = 0
+    """
+    :param year_month: str '2018-1'
+    :return: the number of tweet nok and random tweet
+    """
+    files = glob.glob("/Users/Nozomi/files/tweet_nok/nok{}/nok*".format(year_month))  # tweets contain nok
+    files2 = glob.glob("/Users/Nozomi/files/tweet/tweet{}/tweet*".format(year_month))  # random tweet
+    tweet_count, tweet_count2 = 0, 0
     for file in files:
         with open(file, 'r', encoding='utf-8') as f:
             tweet_count += len(list(csv.reader(f, delimiter='\t')))
     for file in files2:
-        try:
-            with open(file, 'r', encoding='utf-8') as f:
+        with open(file, 'r', encoding='utf-8') as f:
                 tweet_count2 += len(list(csv.reader(f, delimiter='\t')))
-        except UnicodeDecodeError:
-            pass
     return tweet_count, tweet_count2
 
+
 def all_tweets(year):
-    tweet_count = 0
-    tweet_count2 = 0
+    """
+    all tweet count in the year
+    """
+    tweet_count, tweet_count2 = 0
     for i in range(1,13):
         a, b = count_tweet(year + '-{}'.format(i))
         tweet_count += a
@@ -104,28 +111,41 @@ def all_tweets(year):
     print('random tweet: {}'.format(tweet_count2))
 
 
-def frequency(word, year, denominator=10000):  # 'เป็น', 2014
+def freq(word, year, denominator=10000):  # frequency('เป็น', '2018')
     """
     calculate word frequency from random tweet file
+    print word frequency of each month and total count of the year
     """
 
-    all_tokens = 0
-    all_count = 0
+    all_token, all_count = 0, 0
 
+    # iterate month
     for i in range(1, 13):
         file = "/Users/Nozomi/files/tweet/tweet{0}-{1}/random_{0}-{1}.tsv".format(year, i)
         token, count = 0, 0
         with open(file, 'r', encoding='utf-8') as f:
-            for tweet in csv.reader(f, delimiter='\t'):  # loop for tokenized tweet
-                token += len([x for x in tweet if (x != '\n' and not x.startswith(' '))])
+            for tweet in csv.reader(f, delimiter='\t'):  # iterate tokenized tweet
+                token += len([x for x in tweet if (x != '\n' and not x.startswith(' '))])  # token in one tweet (except space)
                 count += tweet.count(word)
-
-        all_tokens += token
+        all_token += token
         all_count += count
         print(count * denominator / token)
-    print('\ntotal: {}'.format(all_count * denominator / all_tokens))
-    print('tokens: {}'.format(all_tokens))
+    print('\ntotal: {}'.format(all_count * denominator / all_token))
+    print('tokens: {}'.format(all_token))
 
+
+def freq_all(word, denominator=10000):  # frequency('เป็น')
+    # iterate year
+    for year in range(2014, 2019):
+        # iterate month
+        for i in range(1, 13):
+            file = "/Users/Nozomi/files/tweet/tweet{0}-{1}/random_{0}-{1}.tsv".format(year, i)
+            token, count = 0, 0
+            with open(file, 'r', encoding='utf-8') as f:
+                for tweet in csv.reader(f, delimiter='\t'):  # iterate tokenized tweet
+                    token += len([x for x in tweet if (x != '\n' and not x.startswith(' '))])  # token in one tweet (except space)
+                    count += tweet.count(word)
+            print(count * denominator / token)
 
 
 def col_most(year_month, query = 'นก'):
