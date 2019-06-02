@@ -3,7 +3,6 @@ from gensim.models import word2vec
 from gensim.models import KeyedVectors
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import glob
 import csv
 import re
 import numpy as np
@@ -80,7 +79,7 @@ def tokenize_test(file):  # 2012-2-15
     f.close()
 
 
-def make_model(month, skipgram=0, epoch=3):
+def make_model(month, skipgram=0, epoch=2):
     file = open('/Users/Nozomi/files/tweet/tweet{}/tokenized_{}.txt'.format(month, month), 'r', encoding='utf-8')
     sentences = word2vec.LineSentence(file)
       # CBOW: sg=0, skip-gram: sg=1
@@ -104,7 +103,7 @@ month2018 = ['2018-%s' % i for i in range(1, 13)]
 months = month2014 + month2015 + month2016 + month2017 + month2018
 
 # calculate the cosine similarity of 'nok' and word, and plot the transition
-def change(word):
+def change(word1, word2='นก'):
     x, y = [], []
     for month in months:
         model = KeyedVectors.load_word2vec_format('/Users/Nozomi/files/tweet/tweet{}/{}.bin'.format(month, month), binary=True)
@@ -112,14 +111,14 @@ def change(word):
             x.append(month)
         else:
             x.append(month.split('-')[-1])
-        y.append(cos_sim(model.wv['นก'], model.wv[word]))
+        y.append(cos_sim(model.wv[word1], model.wv[word2]))
     for i in y:
         print(i)
     plt.plot(np.arange(0, len(x)), y,'-o')
     plt.xticks(np.arange(0, len(x)), x, rotation='vertical')
     plt.ylabel('cosine similarity')
-    plt.ylim(-0.1, 0.6)
-    plt.title('Cosine Similarity of นก and %s' % word)
+    plt.ylim(-0.1, 0.8)
+    plt.title('Cosine Similarity of {} and {}'.format(word1, word2))
     plt.show()
     
     
