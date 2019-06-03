@@ -120,8 +120,8 @@ def freq(word, year, denominator=10000):  # frequency('เป็น', '2018')
     all_token, all_count = 0, 0
 
     # iterate month
-    for i in range(1, 13):
-        file = "/Users/Nozomi/files/tweet/tweet{0}-{1}/random_{0}-{1}.tsv".format(year, i)
+    for month in range(1, 13):
+        file = "/Users/Nozomi/files/tweet/tweet{0}-{1}/random_{0}-{1}.tsv".format(year, month)
         token, count = 0, 0
         with open(file, 'r', encoding='utf-8') as f:
             for tweet in csv.reader(f, delimiter='\t'):  # iterate tokenized tweet
@@ -136,16 +136,26 @@ def freq(word, year, denominator=10000):  # frequency('เป็น', '2018')
 
 def freq_all(word, denominator=10000):  # frequency('เป็น')
     # iterate year
-    for year in range(2014, 2019):
+    for year in range(2013, 2019):
         # iterate month
-        for i in range(1, 13):
-            file = "/Users/Nozomi/files/tweet/tweet{0}-{1}/random_{0}-{1}.tsv".format(year, i)
-            token, count = 0, 0
-            with open(file, 'r', encoding='utf-8') as f:
-                for tweet in csv.reader(f, delimiter='\t'):  # iterate tokenized tweet
-                    token += len([x for x in tweet if (x != '\n' and not x.startswith(' '))])  # token in one tweet (except space)
-                    count += tweet.count(word)
-            print(count * denominator / token)
+        if year == 2013:
+            for month in range(5, 13):
+                file = "/Users/Nozomi/files/tweet/tweet{0}-{1}/random_{0}-{1}.tsv".format(year, month)
+                token, count = 0, 0
+                with open(file, 'r', encoding='utf-8') as f:
+                    for tweet in csv.reader(f, delimiter='\t'):  # iterate tokenized tweet
+                        token += len([x for x in tweet if (x != '\n' and not x.startswith(' '))])  # token in one tweet (except space)
+                        count += tweet.count(word)
+                print(count * denominator / token)
+        else:
+            for month in range(1, 13):
+                file = "/Users/Nozomi/files/tweet/tweet{0}-{1}/random_{0}-{1}.tsv".format(year, month)
+                token, count = 0, 0
+                with open(file, 'r', encoding='utf-8') as f:
+                    for tweet in csv.reader(f, delimiter='\t'):  # iterate tokenized tweet
+                        token += len([x for x in tweet if (x != '\n' and not x.startswith(' '))])  # token in one tweet (except space)
+                        count += tweet.count(word)
+                print(count * denominator / token)
 
 
 def col_most(year_month, query = 'นก'):
@@ -186,14 +196,12 @@ def col_most(year_month, query = 'นก'):
     print(str(col_b.most_common(30)) +'\t'+ str(count_b))
     print(str(col_a.most_common(30)) +'\t'+ str(count_a))
 
-def col_year(year, col, ba=0):
-    # get file names
-    #files = glob.glob("/Users/Nozomi/files/tweet_nok/nok{}/tokenized_*.tsv".format(year_month))
-
+def col_pre(year, query, total=True):
+    
     for i in range(1, 13):
 
-        col_b, col_a = collections.Counter(), collections.Counter()
-        count_b, count_a = 0, 0
+        col = 0
+        total_col = 0
         file = "/Users/Nozomi/files/tweet_nok/nok{0}-{1}/tokenized_{0}-{1}.tsv".format(year, i)  # for nok
         #file = "/Users/Nozomi/files/tweet/tweet{0}-{1}/random_{0}-{1}.tsv".format(year, i)  # for random
 
@@ -201,33 +209,38 @@ def col_year(year, col, ba=0):
             for tweet in csv.reader(f, delimiter='\t'):  # loop for tokenized tweet
                 for i, word in enumerate(tweet):
                     if word == 'นก':
-                        if len(tweet) == 1:  # tweet with only one token
-                            pass
+                        if i > 0 and tweet[i-1] != '\n' and not tweet[i-1].startswith(' '):
+                            total_col += 1
+                            if tweet[i-1] == query:
+                                col += 1
 
-                        # initial position
-                        elif i == 0:
-                            if tweet[i+1] != '\n' and not tweet[i+1].startswith(' '):
-                                col_a[tweet[i+1]] += 1
-                                count_a += 1
-
-                        # final position
-                        elif i == len(tweet) - 1:
-                            if tweet[i-1] != '\n' and not tweet[i-1].startswith(' '):
-                                col_b[tweet[i-1]] += 1
-                                count_b += 1
-                        else:
-                            if tweet[i-1] != '\n' and not tweet[i-1].startswith(' '):
-                                col_b[tweet[i-1]] += 1
-                                count_b += 1
-                            if tweet[i+1] != '\n' and not tweet[i+1].startswith(' '):
-                                col_a[tweet[i+1]] += 1
-                                count_a += 1
-
-        if ba == 0:
-            print(count_b, col_b[col])
-
+        if total==True:
+            print(total_col, col)
         else:
-            print(count_a, col_a[col])
+            print(col)
+            
+def col_fol(year, query, total=True):
+    
+    for i in range(1, 13):
+
+        col = 0
+        total_col = 0
+        file = "/Users/Nozomi/files/tweet_nok/nok{0}-{1}/tokenized_{0}-{1}.tsv".format(year, i)  # for nok
+        #file = "/Users/Nozomi/files/tweet/tweet{0}-{1}/random_{0}-{1}.tsv".format(year, i)  # for random
+
+        with open(file, 'r', encoding='utf-8') as f:
+            for tweet in csv.reader(f, delimiter='\t'):  # loop for tokenized tweet
+                for i, word in enumerate(tweet):
+                    if word == 'นก':
+                        if i<len(tweet)-1 and tweet[i+1] != '\n' and not tweet[i+1].startswith(' '):
+                            total_col += 1
+                            if tweet[i+1] == query:
+                                col += 1
+
+        if total==True:
+            print(total_col, col)
+        else:
+            print(col)
 
 
 def search_col_year(year, query1, query2):
