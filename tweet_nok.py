@@ -1,15 +1,14 @@
 from time import sleep
-from selenium import webdriver
 import re
 import date
 from bs4 import BeautifulSoup
+from selenium.webdriver import Chrome, ChromeOptions
 from urllib.parse import unquote
 import csv
 from os import makedirs
 
 
-def nok(month, append=True, scroll=8
-        , sleep_time=0.5):  # month = date.month2013_10
+def nok(month, append=True, scroll=10, sleep_time=1):  # month = date.month2013_10
     """
     example:
 
@@ -17,11 +16,11 @@ def nok(month, append=True, scroll=8
     month[0].rsplit('-', 1) = ['2013-10', '1']
     path = './tweet_nok/nok2013-10'
     """
-    driver = webdriver.Chrome()
+    # selenium (headless)
+    driver = Chrome()
     sleep(1)
+
     path = '/Users/Nozomi/files/tweet_nok/nok' + month[0].rsplit('-', 1)[0]
-    #path = '/Users/Nozomi/files/khan/' + month[0].rsplit('-', 1)[0]
-    #makedirs(path)
 
     # loop for each day
     for i in range(len(month) - 1):
@@ -63,7 +62,8 @@ def nok(month, append=True, scroll=8
             # scraping
             id_compile = re.compile('tweet js-stream-tweet .*')
             tweet_compile = re.compile('TweetTextSize .*')
-            soup = BeautifulSoup(driver.page_source, "html.parser")  # get html
+            html = driver.page_source.encode('utf-8')
+            soup = BeautifulSoup(html, "html.parser")  # get html
             id_html = soup.find_all('div', class_=id_compile)  # get user id and tweet id
             tweet_html = soup.find_all('p', class_=tweet_compile)  # get tweet and hash tag
             tweet_one_day += len(id_html)

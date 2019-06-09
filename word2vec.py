@@ -55,9 +55,9 @@ def combine(month):  # month = '2015-4'
             writer.writerowห(tokenized)
     """
     # get file
-    file_random = '/Users/Nozomi/files/tweet/tweet{}/random_{}.tsv'.format(month, month)
-    file_nok = '/Users/Nozomi/files/tweet_nok/nok{}/tokenized_{}.tsv'.format(month, month)
-    save_file = open('/Users/Nozomi/files/tweet/tweet{}/tokenized_{}.txt'.format(month, month), 'w', encoding='utf-8')
+    file_random = '/Users/Nozomi/files/processed/random{}.tsv'.format(month, month)
+    file_nok = '/Users/Nozomi/files/processed/nok{}.tsv'.format(month, month)
+    save_file = open('/Users/Nozomi/files/processed/combined{}.txt'.format(month, month), 'w', encoding='utf-8')
     writer = csv.writer(save_file, delimiter=' ', lineterminator='\n')
 
 
@@ -80,15 +80,15 @@ def tokenize_test(file):  # 2012-2-15
 
 
 def make_model(month, skipgram=0, epoch=2):
-    file = open('/Users/Nozomi/files/tweet/tweet{}/tokenized_{}.txt'.format(month, month), 'r', encoding='utf-8')
+    file = open('/Users/Nozomi/files/processed/combined{}.txt'.format(month, month), 'r', encoding='utf-8')
     sentences = word2vec.LineSentence(file)
       # CBOW: sg=0, skip-gram: sg=1
     if skipgram == 0:
         model = word2vec.Word2Vec(sentences, sg=skipgram, size=300, min_count=5, window=10, iter=epoch)
-        model.wv.save_word2vec_format('/Users/Nozomi/files/tweet/tweet{}/{}.bin'.format(month, month), binary=True)
+        model.wv.save_word2vec_format('/Users/Nozomi/files/processed/{}.bin'.format(month, month), binary=True)
     elif skipgram == 1:
         model = word2vec.Word2Vec(sentences, sg=skipgram, size=300, min_count=5, window=5, iter=epoch)
-        model.wv.save_word2vec_format('/Users/Nozomi/files/tweet/tweet{}/{}sg.bin'.format(month, month), binary=True)
+        model.wv.save_word2vec_format('/Users/Nozomi/files/processed/{}sg.bin'.format(month, month), binary=True)
 
     file.close()
 
@@ -106,7 +106,7 @@ months = month2014 + month2015 + month2016 + month2017 + month2018
 def change(word1, word2='นก'):
     x, y = [], []
     for month in months:
-        model = KeyedVectors.load_word2vec_format('/Users/Nozomi/files/tweet/tweet{}/{}.bin'.format(month, month), binary=True)
+        model = KeyedVectors.load_word2vec_format('/Users/Nozomi/files/processed/{}.bin'.format(month, month), binary=True)
         if month.endswith('-1'):
             x.append(month)
         else:
@@ -128,7 +128,7 @@ def most():
         most_month(month)
 
 def most_month(month, k=5):
-    model = KeyedVectors.load_word2vec_format('/Users/Nozomi/files/tweet/tweet{}/{}.bin'.format(month, month), binary=True)
+    model = KeyedVectors.load_word2vec_format('/Users/Nozomi/files/processed/{}.bin'.format(month, month), binary=True)
     results = model.wv.most_similar(positive=['นก'], topn=100)
     i = 0
     # print('\n%s' % month)
