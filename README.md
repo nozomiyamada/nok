@@ -22,7 +22,9 @@ Proceedings of The 33rd Pacific Asia Conference on Language, Information and Com
 
     ~~~python
     from pythainlp import word_tokenizer
+    word_tokenizer('นกอีกแล้วอยากจะตาย')
     
+    >>> ['นก', 'อีกแล้ว', 'อยาก', 'จะ', 'ตาย']
     ~~~
 
 ## Measures
