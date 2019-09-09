@@ -1,12 +1,9 @@
 import collections
-import csv
 import glob
-import re
+import re, os, csv
 import random
-import os
 import numpy as np
 from pythainlp import word_tokenize
-
 
 def trim(text):
     """
@@ -28,7 +25,6 @@ def trim(text):
     text = re.sub(r'นกนก(นก)+', 'นกนกนก', text)
     text = re.sub(r'([ก-๛a-zA-Z]+)\1{2}\1+', r'\1', text)
     return text
-
 
 def tokenize_nok(year_month):
     """

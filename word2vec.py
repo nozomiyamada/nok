@@ -3,12 +3,10 @@ from gensim.models import word2vec
 from gensim.models import KeyedVectors
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import csv
-import re
+import csv, re
 import numpy as np
 font = {"family":"THSarabun"}
 mpl.rc('font', **font)
-
 
 def trim(text):
     """
@@ -60,7 +58,6 @@ def combine(month):  # month = '2015-4'
     save_file = open('/Users/Nozomi/files/processed/combined{}.txt'.format(month, month), 'w', encoding='utf-8')
     writer = csv.writer(save_file, delimiter=' ', lineterminator='\n')
 
-
     with open(file_nok, 'r', encoding='utf-8') as f:
         lines = csv.reader(f, delimiter='\t')
         writer.writerows(lines)
@@ -70,19 +67,19 @@ def combine(month):  # month = '2015-4'
         writer.writerows(lines)
 
     save_file.close()
-    
+
+
 def tokenize_test(file):  # 2012-2-15
-    f = open(file, 'r', encoding='utf-8')
-    for i, tweet in enumerate(csv.reader(f, delimiter='\t')):
-        print(i+1, tweet[0])
-        word_tokenize(trim(tweet[-1]))
-    f.close()
+    with open(file, 'r', encoding='utf-8') as f:
+        for i, tweet in enumerate(csv.reader(f, delimiter='\t')):
+            print(i+1, tweet[0])
+            word_tokenize(trim(tweet[-1]))
 
 
-def make_model(month, skipgram=0, epoch=2):
+def make_model(month, skipgram=0, epoch=3):
     file = open('/Users/Nozomi/files/processed/combined{}.txt'.format(month, month), 'r', encoding='utf-8')
     sentences = word2vec.LineSentence(file)
-      # CBOW: sg=0, skip-gram: sg=1
+    # CBOW: sg=0, skip-gram: sg=1
     if skipgram == 0:
         model = word2vec.Word2Vec(sentences, sg=skipgram, size=300, min_count=5, window=10, iter=epoch)
         model.wv.save_word2vec_format('/Users/Nozomi/files/processed/{}.bin'.format(month, month), binary=True)
