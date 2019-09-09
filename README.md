@@ -13,6 +13,17 @@ Proceedings of The 33rd Pacific Asia Conference on Language, Information and Com
    3. Diachronic Word Embeddings
    
 ## Data
+- tweets written in Thai
+- January 2012 - December 2018 
+  - data set A : tweets containing the word nók 1000 - 2500 tweets / day,  total 4,156,466 tweets
+  - data set B : random tweets 10000 - 25000 tweets / day,  total 21,558,621 tweets
+- collected tweets every 10 minutes in order to prevent from being biased
+- tokenizer : [`PyThaNLP 2.0.3`](https://github.com/PyThaiNLP/pythainlp) using Maximum-Matching algorithm (`engine=newmm`)
+
+    ~~~python
+    from pythainlp import word_tokenizer
+    
+    ~~~
 
 ## Measures
 ### 1. Conditional Probability of Bigram
@@ -29,4 +40,12 @@ _pre_, _fol_ are abbreviations of "preceeding" and "following", respectively
 <img src="https://latex.codecogs.com/gif.latex?{\rm&space;PMI}(nok,~w_i)&space;=&space;\log_2\frac{p(nok,~w_i)}{p(nok)~p(w_i)}" title="{\rm PMI}(nok,~w_i) = \log_2\frac{p(nok,~w_i)}{p(nok)~p(w_i)}" />
 
 ## 3. Diachronic Word Embeddings
+cosine similarity of two word embeddings: _nók_ and synonym _s_
+
 <img src="https://latex.codecogs.com/gif.latex?{\rm&space;cos~similarity}(\vec{nok},~\vec{s})&space;=&space;\frac{\vec{nok}\cdot\vec{s}}{\|\vec{nok}\|\|\vec{s}\|}" title="{\rm cos~similarity}(\vec{nok},~\vec{s}) = \frac{\vec{nok}\cdot\vec{s}}{\|\vec{nok}\|\|\vec{s}\|}" />
+
+use [`gensim 3.7.3`](https://radimrehurek.com/gensim/) and made word embeddings of data of each month
+ - CBoW algorithm (CBoW works better than skip-gram in case of high-frequency word (Naili et al, 2017))
+ - window size of 5
+ - 300 dimensional vector
+ - iterated 3 epochs (loss did not decrease more)
