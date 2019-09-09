@@ -5,21 +5,18 @@ import date
 from bs4 import BeautifulSoup
 from urllib.parse import unquote
 import csv
-from os import makedirs
+import os
 
-
-def scrape(month, append=True, scroll=20, sleep_time=0.5):  # month = date.month2013_1
+def scrape(month, append=True, scroll=20, sleep_time=0.5):
     """
-    example:
-        
-    month = date.month2013_10 = ['2013-10-1', '2013-10-2',...]
+    month: date.month2013_10 = ['2013-10-1', '2013-10-2',...]
     month[0].rsplit('-', 1) = ['2013-10', '1']
-    path = './tweet/2013-10'
     """
-    driver = webdriver.Firefox()
+    driver = webdriver.Chrome()
     sleep(1)
     path = '/Users/Nozomi/files/tweet/tweet' + month[0].rsplit('-', 1)[0]
-    #makedirs(path)
+    if not os.path.isdir(path):
+        os.makedirs(path)
     
     """
     loop for each day
@@ -32,28 +29,28 @@ def scrape(month, append=True, scroll=20, sleep_time=0.5):  # month = date.month
 
         if append == True:
             # open file once for making tweet ID list
-            read_file = open('{}/tweet{}.tsv'.format(path, since), 'r', encoding='utf-8')
-            id_list = [line[1] for line in csv.reader(read_file, delimiter='\t')]
-            read_file.close()
+            with open(f'{path}/tweet{since}.tsv', 'r', encoding='utf-8') as f:
+                id_list = [line[1] for line in csv.reader(f, delimiter='\t')]
 
             # open file again for saving tweets in one day
-            file = open('{}/tweet{}.tsv'.format(path, since), 'a', encoding='utf-8')
-        else:
-            file = open('{}/tweet{}.tsv'.format(path, since), 'w', encoding='utf-8')
-        writer = csv.writer(file, delimiter='\t', lineterminator='\n')
+            file = open(f'{path}/tweet{since}.tsv', 'a', encoding='utf-8')
+        elif append == False:
+            file = open(f'{path}/tweet{since}.tsv', 'w', encoding='utf-8')
 
+        # tsv writer
+        writer = csv.writer(file, delimiter='\t', lineterminator='\n')
 
         # loop for each hour in one day
         for j in range(144):  # date.time = each 10 minute * 24hours
 
-            if j == 143:  # override "since:2013-1-1_23:55:00_ICT until:2013-1-2_0:05:00_ICT"
+            if j == 143:  # override "since:2013-1-1_23:50:00_ICT until:2013-1-2_0:00:00_ICT"
                 until = month[i+1]
 
             time1 = date.time[j]
             time2 = date.time[j+1]
 
-            # search url: "lang:th since:2013-1-1_15:05:00_ICT until:2013-1-1_15:15:00_ICT"
-            url = "https://twitter.com/search?f=tweets&q=lang%3Ath%20since%3A{}_{}_ICT%20until%3A{}_{}_ICT".format(since, time1, until, time2)
+            # search url: "lang:th since:2013-1-1_15:00:00_ICT until:2013-1-1_15:10:00_ICT"
+            url = f'https://twitter.com/search?f=tweets&q=lang%3Ath%20since%3A{since}_{time1}_ICT%20until%3A{until}_{time2}_ICT'
             driver.get(url)
 
             # scroll k times
@@ -75,13 +72,15 @@ def scrape(month, append=True, scroll=20, sleep_time=0.5):  # month = date.month
                 user_id = id_html_checked[k].get('data-permalink-path').split('/status/')[0].strip('/')
                 tweet_id = id_html_checked[k].get('data-permalink-path').split('/status/')[-1]
                 tweet = tweet_html[k].text
-                """
+                
+                """ hash tags
                 if tweet_html[k].find('a') is not None:
                     hashtags = tweet_html[k].find_all('a')
                     hashtag = [unquote(tag.get('href').split('/hashtag/')[-1].strip('?src=hash')) for tag in hashtags]
                 else:
                     hashtag = 'None'
                 """
+                
                 line = [user_id, tweet_id, tweet]
                 if append == True:
                     if tweet_id not in id_list:

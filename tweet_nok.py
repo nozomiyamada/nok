@@ -8,7 +8,7 @@ import csv
 from os import makedirs
 
 
-def nok(month, append=True, scroll=10, sleep_time=1):  # month = date.month2013_10
+def nok(month, query='นก', append=True, scroll=8, sleep_time=1):  # month = date.month2013_10
     """
     example:
 
@@ -51,7 +51,7 @@ def nok(month, append=True, scroll=10, sleep_time=1):  # month = date.month2013_
             time2 = date.time30[j+1]
 
             # search url e.g. "นก since:2013-1-1_16:25:00_ICT until:2013-1-1_17:25:00_ICT"
-            url = "https://twitter.com/search?f=tweets&q=นก%20since%3A{}_{}_ICT%20until%3A{}_{}_ICT".format(since, time1, until, time2)
+            url = "https://twitter.com/search?f=tweets&q={}%20since%3A{}_{}_ICT%20until%3A{}_{}_ICT".format(query, since, time1, until, time2)
             driver.get(url)
 
             # scroll k times

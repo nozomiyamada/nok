@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import csv
 import re
 import numpy as np
-font = {"family":"Ayuthaya"}
+font = {"family":"THSarabun"}
 mpl.rc('font', **font)
 
 

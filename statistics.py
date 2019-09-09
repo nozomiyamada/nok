@@ -95,8 +95,11 @@ def count_tweet(year_month):
         with open(file, 'r', encoding='utf-8') as f:
             tweet_count += len(list(csv.reader(f, delimiter='\t')))
     for file in files2:
-        with open(file, 'r', encoding='utf-8') as f:
+        try:
+            with open(file, 'r', encoding='utf-8') as f:
                 tweet_count2 += len(list(csv.reader(f, delimiter='\t')))
+        except UnicodeDecodeError:
+            pass
     return tweet_count, tweet_count2
 
 
@@ -104,7 +107,7 @@ def all_tweets(year):
     """
     all tweet count in the year
     """
-    tweet_count, tweet_count2 = 0
+    tweet_count, tweet_count2 = 0, 0
     for i in range(1,13):
         a, b = count_tweet(year + '-{}'.format(i))
         tweet_count += a
