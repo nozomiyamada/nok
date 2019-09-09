@@ -13,12 +13,22 @@ Proceedings of The 33rd Pacific Asia Conference on Language, Information and Com
    3. Diachronic Word Embeddings
    
 ## Data
-- tweets written in Thai
-- January 2012 - December 2018 
-  - data set A : tweets containing the word nók 1000 - 2500 tweets / day,  total 4,156,466 tweets
-  - data set B : random tweets 10000 - 25000 tweets / day,  total 21,558,621 tweets
+
+tweets written in Thai : January 2012 - December 2018 
+
+|Year | A: Tweets contain _nók_ | B: Random Tweets |
+|:-:|--:|--:|
+|2012 | 118,799 | 0 |
+|2013 | 476,365 | 2,529,665 |
+|2014 | 425,421 | 3,732,020 |
+|2015 | 395,334 | 3,153,596 |
+|2016 | 778,243 | 3,434,185 |
+|2017 | 1,070,668 | 5,152,559 |
+|2018 | 891,636 | 3,556,596 |
+| **total** | **4,156,466** | **21,558,621**|
+
 - collected tweets every 10 minutes in order to prevent from being biased
-- tokenizer : [`PyThaNLP 2.0.3`](https://github.com/PyThaiNLP/pythainlp) using Maximum-Matching algorithm (`engine=newmm`)
+- tokenizer : [`PyThaNLP 2.0.3`](https://github.com/PyThaiNLP/pythainlp) using Maximum-Matching algorithm (`engine='newmm'`)
 
     ~~~python
     from pythainlp import word_tokenizer
@@ -26,6 +36,7 @@ Proceedings of The 33rd Pacific Asia Conference on Language, Information and Com
     
     >>> ['นก', 'อีกแล้ว', 'อยาก', 'จะ', 'ตาย']
     ~~~
+- Maximum-Matching algorithm requires vocaburary set (dictionary). In this reserach, we removed all compound words that contain the morpheme _nók_ beforehand. (e.g. _nókphirâap_ "pigeon")
 
 ## Measures
 ### 1. Conditional Probability of Bigram
