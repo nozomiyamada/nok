@@ -80,14 +80,31 @@ use [`gensim 3.7.3`](https://radimrehurek.com/gensim/) and made word embeddings 
 
 There is no abrupt change in word frequencies of general words.
 
-|word|phonemic|gloss|
-|:-:|:-:|:-:|
-|ไม่ |/mai/|not|
-|เป็น|/pen/|copula word|
-|ทำ|/tham/|do|
+|word|phonemic|gloss|grammatical|
+|:-:|:-:|:-:|:-:|
+|ไม่ |/mai/|not|negator|
+|เป็น|/pen/|be|copula word|
+|ทำ|/tham/|do|-|
 
 
 ### 1. Conditional Probability of Bigram
+#### 1-1. preceeding word
+
+|word|phonemic|gloss|grammatical|
+|:-:|:-:|:-:|:-:|
+|ไม่ |/mai/|not|negator|
+|จะ|/ca/|will|auxiliary verb|
+|อย่า|/jaa/|don't|auxiliary verb|
+|ความ|/khwaam/|-| nominalizer|
+
+#### 1-2. following word
+
+|word|phonemic|gloss|grammatical|
+|:-:|:-:|:-:|:-:|
+|แล้ว|/mai/|already|perfect tense|
+|อีก|/ca/|again|-|
+|ตลอด|/jaa/|always|-|
+|บัตร|/bat/|ticket|-|
 
 ### 2. PMI at Tweet Level
 
