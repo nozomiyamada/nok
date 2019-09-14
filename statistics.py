@@ -159,10 +159,10 @@ def freq_all(word, denominator=10000):  # frequency('เป็น')
                 print(count * denominator / token)
 
 
-def col_most(year_month, query='นก'):
+def col_most(year_month, n = 20, query='นก'):
     # get file names
-    file = "/Users/Nozomi/files/processed/nok{}.tsv".format(year_month)
-    #file = "/Users/Nozomi/files/processed/random{}.tsv".format(year_month)
+    #file = "/Users/Nozomi/files/processed/nok{}.tsv".format(year_month)
+    file = f"/Volumes/NOZOMIUSB/processed/nok{year_month}.tsv"
 
     col_b, col_a = collections.Counter(), collections.Counter()
     count_b, count_a = 0, 0
@@ -192,9 +192,11 @@ def col_most(year_month, query='นก'):
                         if tweet[i+1] != '\n' and not tweet[i+1].startswith(' '):
                             col_a[tweet[i+1]] += 1
                             count_a += 1
-
-    print(str(col_b.most_common(30)) +'\t'+ str(count_b))
-    print(str(col_a.most_common(30)) +'\t'+ str(count_a))
+    result = ''
+    #for tpl in col_b.most_common(n):
+    for tpl in col_a.most_common(n):
+        result += tpl[0] + ': ' + str(tpl[1]) + ','
+    print(result.strip(','))
 
 def col_pre(year, query, total=True):
     
@@ -202,7 +204,7 @@ def col_pre(year, query, total=True):
 
         col = 0
         total_col = 0
-        file = "/Users/Nozomi/files/processed/nok{0}-{1}.tsv".format(year, month)  # for nok
+        file = f"/Volumes/NOZOMIUSB/processed/nok{year}.tsv"  # for nok
         #file = "/Users/Nozomi/files/processed/random{0}-{1}.tsv".format(year, month)  # for random
 
         with open(file, 'r', encoding='utf-8') as f:

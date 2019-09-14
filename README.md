@@ -3,16 +3,19 @@
 Proceedings of The 33rd Pacific Asia Conference on Language, Information and Computation - [PACLIC33](https://jaslli.org/paclic33/)
  
 ## What is this about?
-- A case study about language change in Thai Twitter
-- Target is an innovative usage of _nók_
-- Original meaning is "bird", now it is also used in the meaning "to fail to (flirt)"
-- Its polysemy makes it difficult to analyze diffusion by using only word frequency
-- Then, we adopted 3 probabilistic measures:
+- A case study about a lexical innovation in Thai Twitter
+- Target is an innovative verbal usage of _nók_
+- The original meaning is "bird", now it is also used in the meaning "to fail to one's expectation"
+- especially in a sence of love or flirting
+- Word frequency is the popular method for investigating language change, but polysemy of _nók_ makes it difficult to analyze diffusion by using only word frequency
+- Then, we adopted 3 probabilistic measures instead:
   1. Conditional Probability of Bigram
   2. Pointwise Mutual Information at Tweet Level
   3. Diachronic Word Embeddings
 
-## Goals of Research
+## Questions
+1. What kind of measure is effective for polysemy?
+2. How to quantify the progress of diffusion of nok?
 
 
 ## Data and Pre-proessing
@@ -30,7 +33,7 @@ tweets written in Thai : January 2012 - December 2018
 |2018 | 891,636 | 3,556,596 |
 | **total** | **4,156,466** | **21,558,621**|
 
-- collected tweets every 10 minutes in order to prevent from being biased
+- collected tweets every 10 minutes in order to prevent from being biased 
 - tokenizer : [`PyThaNLP 2.0.3`](https://github.com/PyThaiNLP/pythainlp) using Maximum-Matching algorithm (`engine='newmm'`)
 
     ~~~python
@@ -47,7 +50,7 @@ tweets written in Thai : January 2012 - December 2018
     >>> ['นก', 'พิราบ']
     ~~~
 
-## Measures
+## Probabilistic Measures
 ### 1. Conditional Probability of Bigram
 <img src="https://latex.codecogs.com/gif.latex?p_{pre}(w_i|nok)&space;=&space;\frac{C(w_i,~nok)}{\sum_w&space;C(w,~nok)}" title="p_{pre}(w_i|nok) = \frac{C(w_i,~nok)}{\sum_w C(w,~nok)}" />
 <img src="https://latex.codecogs.com/gif.latex?p_{fol}(w_i|nok)&space;=&space;\frac{C(nok,~w_i)}{\sum_w&space;C(nok,~w)}" title="p_{fol}(w_i|nok) = \frac{C(nok,~w_i)}{\sum_w C(nok,~w)}" />
@@ -57,9 +60,29 @@ tweets written in Thai : January 2012 - December 2018
 
 _pre_, _fol_ are abbreviations of "preceeding" and "following", respectively
 
+example: _nók A B nók B C nók A_ (A,B,C are words)
+
+(*, nók) : (B, nók), (C, nók) ... 2 bigrams
+
+- p<sub>pre</sub>(A|nok) = 0
+- p<sub>pre</sub>(B|nok) = 1/2
+- p<sub>pre</sub>(C|nok) = 1/2
+
+(nók, *) : (nók, A), (nók, B), (nók, A) ... 3 bigrams
+
+- p<sub>fol</sub>(A|nok) = 2/3
+- p<sub>fol</sub>(B|nok) = 1/3
+- p<sub>fol</sub>(C|nok) = 0
+
+I was inspired by P<sub>CONTINUATION</sub> of Kneser-Ney Smoothing (but not the same one) 
+
 ### 2. Pointwise Mutual Information at Tweet Level
 <img src="https://latex.codecogs.com/gif.latex?{\rm&space;PMI}(w_i,~nok)&space;=&space;\log_2\frac{p(w_i,~nok)}{p(w_i)~p(nok)}" title="{\rm PMI}(w_i,~nok) = \log_2\frac{p(w_i,~nok)}{p(w_i)~p(nok)}" />
 <img src="https://latex.codecogs.com/gif.latex?{\rm&space;PMI}(nok,~w_i)&space;=&space;\log_2\frac{p(nok,~w_i)}{p(nok)~p(w_i)}" title="{\rm PMI}(nok,~w_i) = \log_2\frac{p(nok,~w_i)}{p(nok)~p(w_i)}" />
+
+- p(w<sub>i</sub>, nok): the probability that one tweet contains the bigram (w<sub>i</sub>, nók) 
+
+- p(w<sub>i</sub>): the probability that one tweet contains the word w<sub>i</sub>
 
 ### 3. Diachronic Word Embeddings
 cosine similarity of two word embeddings: _nók_ and synonym _s_
@@ -74,40 +97,47 @@ use [`gensim 3.7.3`](https://radimrehurek.com/gensim/) and made word embeddings 
 
 ## Results
 
+### [data](https://docs.google.com/spreadsheets/d/13pWKNKzvn0-Fo3icXgtyXuTSDekcZstsReJ82wOvSqE/edit?usp=sharing)
+
 ### 0. Word Frequency
 
-**Preliminaly experiment**: word frequency of general word
+- preliminaly test for general word
+- _nók_
 
-There is no abrupt change in word frequencies of general words.
+**Preliminaly Test**: word frequencies of general words below
 
 |word|phonemic|gloss|grammatical|
 |:-:|:-:|:-:|:-:|
-|ไม่ |/mai/|not|negator|
-|เป็น|/pen/|be|copula word|
+|ไม่ |/mâi/|not|negator|
+|เป็น|/pen/|be|copula|
 |ทำ|/tham/|do|-|
 
+There is no abrupt change in word frequencies of general words.
 
 ### 1. Conditional Probability of Bigram
 #### 1-1. preceeding word
 
 |word|phonemic|gloss|grammatical|
 |:-:|:-:|:-:|:-:|
-|ไม่ |/mai/|not|negator|
-|จะ|/ca/|will|auxiliary verb|
-|อย่า|/jaa/|don't|auxiliary verb|
+|ไม่ |/mâi/|not|negator|
+|จะ|/cà/|will|auxiliary verb|
+|อย่า|/jàa/|don't|auxiliary verb|
 |ความ|/khwaam/|-| nominalizer|
 
 #### 1-2. following word
 
 |word|phonemic|gloss|grammatical|
 |:-:|:-:|:-:|:-:|
-|แล้ว|/mai/|already|perfect tense|
-|อีก|/ca/|again|-|
-|ตลอด|/jaa/|always|-|
-|บัตร|/bat/|ticket|-|
+|แล้ว|/lɛ́ɛw/|already|perfect tense|
+|อีก|/ìik/|again|-|
+|ตลอด|/talɔ̀ɔt/|always|-|
+|บัตร|/bàt/|ticket|-|
 
 ### 2. PMI at Tweet Level
 
 ### 3. Word Embeddings
 
-### Additional Results
+### Serendipity
+
+### Conclusion
+
