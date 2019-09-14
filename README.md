@@ -55,7 +55,7 @@ tweets written in Thai : January 2012 - December 2018
 #### Syntactic Structures of Thai
 
 ||||
-|:-:|:-:|:-:|:-:|
+|:-:|:-:|:-:|
 |S Verb| S Adj | S **COPULA** Noun |
 |S NEG Verb|S NEG Adj| S NEG **COPULA** Noun |
 |S AUX Verb|S AUX Adj| S AUX **COPULA** Noun |
@@ -234,5 +234,4 @@ after that, meaning is gradually broadened to “miss"
 |tweet level PMI | - | depends on syntactic structure, requires big data (data B)|
 |word embeddings | it shows meaning more directly | requires big data (data B) |
 
-### Conclusion
 
