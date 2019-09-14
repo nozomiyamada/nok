@@ -103,7 +103,10 @@ months = month2014 + month2015 + month2016 + month2017 + month2018
 def change(word1, word2='นก'):
     x, y = [], []
     for month in months:
-        model = KeyedVectors.load_word2vec_format('/Users/Nozomi/files/processed/{}sg.bin'.format(month, month), binary=True)
+        try:
+            model = KeyedVectors.load_word2vec_format('/Volumes/NOZOMIUSB/processed/{}.bin'.format(month, month), binary=True)
+        except:
+            continue
         if month.endswith('-1'):
             x.append(month)
         else:
@@ -111,14 +114,14 @@ def change(word1, word2='นก'):
         y.append(cos_sim(model.wv[word1], model.wv[word2]))
     for i in y:
         print(i)
-    """
+    
     plt.plot(np.arange(0, len(x)), y,'-o')
     plt.xticks(np.arange(0, len(x)), x, rotation='vertical')
     plt.ylabel('cosine similarity')
     plt.ylim(-0.1, 0.8)
     plt.title('Cosine Similarity of {} and {}'.format(word1, word2))
     plt.show()
-    """
+    
     
     
 # print most similar word of each month
@@ -127,13 +130,13 @@ def most():
         most_month(month)
 
 def most_month(month, k=20):
-    model = KeyedVectors.load_word2vec_format(f'/Volumes/NOZOMIUSB/processed/{month}.bin', binary=True)
+    model = KeyedVectors.load_word2vec_format(f'/Volumes/NOZOMIUSB/processed/{month}sg.bin', binary=True)
     results = model.wv.most_similar(positive=['นก'], topn=100)
     i = 0
     # print('\n%s' % month)
     new_list = []
     for result in results:
-        if result[0][0].isdigit() == False and not re.match(r'[#FT!?ๆ,.:;*”"“=\\//\(\)]', result[0][0]):
+        if result[0][0].isdigit() == False and not re.search(r'[#+-FT!?~ๆ,.:;*”"“=\\//\(\)]', result[0][0]):
             new_list.append(result)
             i += 1
         if i == k:

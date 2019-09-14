@@ -51,6 +51,25 @@ tweets written in Thai : January 2012 - December 2018
     ~~~
 
 ## Probabilistic Measures
+
+#### Syntactic Structures of Thai
+
+||||
+|:-:|:-:|:-:|:-:|
+|S Verb| S Adj | S **COPULA** Noun |
+|S NEG Verb|S NEG Adj| S NEG **COPULA** Noun |
+|S AUX Verb|S AUX Adj| S AUX **COPULA** Noun |
+
+copula word (pen เป็น or châi ใช่ “be”) is necessary only when it is nominal sentence
+
+e.g.
+- **mâi** (NEG) _nók_ -> the _nók_ is **VERB** 
+- **pen** (copula) _nók_ -> the _nók_ is **NOUN**
+
+In these cases, we can presume its Part-of-speech from the collocations.
+
+-> **bigrams may help**
+
 ### 1. Conditional Probability of Bigram
 <img src="https://latex.codecogs.com/gif.latex?p_{pre}(w_i|nok)&space;=&space;\frac{C(w_i,~nok)}{\sum_w&space;C(w,~nok)}" title="p_{pre}(w_i|nok) = \frac{C(w_i,~nok)}{\sum_w C(w,~nok)}" />
 <img src="https://latex.codecogs.com/gif.latex?p_{fol}(w_i|nok)&space;=&space;\frac{C(nok,~w_i)}{\sum_w&space;C(nok,~w)}" title="p_{fol}(w_i|nok) = \frac{C(nok,~w_i)}{\sum_w C(nok,~w)}" />
@@ -90,14 +109,15 @@ cosine similarity of two word embeddings: _nók_ and synonym _s_
 <img src="https://latex.codecogs.com/gif.latex?{\rm&space;cos~similarity}(\vec{nok},~\vec{s})&space;=&space;\frac{\vec{nok}\cdot\vec{s}}{\|\vec{nok}\|\|\vec{s}\|}" title="{\rm cos~similarity}(\vec{nok},~\vec{s}) = \frac{\vec{nok}\cdot\vec{s}}{\|\vec{nok}\|\|\vec{s}\|}" />
 
 use [`gensim 3.7.3`](https://radimrehurek.com/gensim/) and made word embeddings of data of each month
-- CBoW algorithm (CBoW works better than skip-gram in case of high-frequency word (Naili et al, 2017))
+- CBoW algorithm (Naili et al, (2017) reported CBoW works better than skip-gram in case of high-frequency word)
+- Actually, the result of skip-gram is almost the same
 - window size of 5
 - 300 dimensional vector
 - iterated 3 epochs (loss did not decrease more)
 
 ## Results
 
-### [data](https://docs.google.com/spreadsheets/d/13pWKNKzvn0-Fo3icXgtyXuTSDekcZstsReJ82wOvSqE/edit?usp=sharing)
+### [Raw Result (Google Spreadsheet)](https://docs.google.com/spreadsheets/d/13pWKNKzvn0-Fo3icXgtyXuTSDekcZstsReJ82wOvSqE/edit?usp=sharing)
 
 ### 0. Word Frequency
 
@@ -112,9 +132,19 @@ use [`gensim 3.7.3`](https://radimrehurek.com/gensim/) and made word embeddings 
 |เป็น|/pen/|be|copula|
 |ทำ|/tham/|do|-|
 
-There is no abrupt change in word frequencies of general words.
+![wf_1](https://user-images.githubusercontent.com/44984892/64902403-bb929c00-d6d0-11e9-9b2a-07fae520c230.png)
+
+There is no abrupt change in word frequencies of general words, it indicates that data is not biased.
+
+While, the word frequency of _nók_ is as below
+
+![wf_2](https://user-images.githubusercontent.com/44984892/64903041-3b723380-d6dc-11e9-9dea-9fc6958910ee.png)
+![wf_3](https://user-images.githubusercontent.com/44984892/64903032-1da4ce80-d6dc-11e9-8078-721eb277164a.png)
+
+It bursts in early 2016 and exponentially decays (it is linear in log scale)
 
 ### 1. Conditional Probability of Bigram
+
 #### 1-1. preceeding word
 
 |word|phonemic|gloss|grammatical|
@@ -123,6 +153,8 @@ There is no abrupt change in word frequencies of general words.
 |จะ|/cà/|will|auxiliary verb|
 |อย่า|/jàa/|don't|auxiliary verb|
 |ความ|/khwaam/|-| nominalizer|
+
+![ppre](https://user-images.githubusercontent.com/44984892/64903016-e8987c00-d6db-11e9-904d-47d80a56892e.png)
 
 #### 1-2. following word
 
@@ -133,9 +165,33 @@ There is no abrupt change in word frequencies of general words.
 |ตลอด|/talɔ̀ɔt/|always|-|
 |บัตร|/bàt/|ticket|-|
 
+![pfol](https://user-images.githubusercontent.com/44984892/64903588-0cf95600-d6e6-11e9-81b9-2c3fef02b1cd.png)
+
 ### 2. PMI at Tweet Level
 
+![pmi](https://user-images.githubusercontent.com/44984892/64903606-606ba400-d6e6-11e9-968a-a8c62030ce32.png)
+
 ### 3. Word Embeddings
+
+**Synonyms**
+
+|word|phonemic|gloss|
+|:-:|:-:|:-:|
+|พลาด| plâat | to miss, to fail |
+|เสียใจ | sǐacai | (to feel) sad |
+|ผิดหวัง | phìtwǎng | to be disappointed |
+
+![w2v_1](https://user-images.githubusercontent.com/44984892/64904002-2a7dee00-d6ed-11e9-8520-ff05e66baa2a.png)
+
+**Unrelated words**
+
+|word|phonemic|gloss|
+|:-:|:-:|:-:|
+|โรงเรียน| roongriang | school|
+|สยาม| sayǎam | a name of city |
+|อาบ |àap | to take a shower
+
+![w2v_2](https://user-images.githubusercontent.com/44984892/64904134-a5480880-d6ef-11e9-9b1c-2ff74ed2fb5d.png)
 
 ### Serendipity
 
