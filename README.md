@@ -163,7 +163,6 @@ It bursts in early 2016 and exponentially decays (it is linear in log scale)
 |แล้ว|/lɛ́ɛw/|already|perfect tense|
 |อีก|/ìik/|again|-|
 |ตลอด|/talɔ̀ɔt/|always|-|
-|บัตร|/bàt/|ticket|-|
 
 ![pfol](https://user-images.githubusercontent.com/44984892/64903588-0cf95600-d6e6-11e9-81b9-2c3fef02b1cd.png)
 
@@ -181,7 +180,9 @@ It bursts in early 2016 and exponentially decays (it is linear in log scale)
 |เสียใจ | sǐacai | (to feel) sad |
 |ผิดหวัง | phìtwǎng | to be disappointed |
 
-![w2v_1](https://user-images.githubusercontent.com/44984892/64904002-2a7dee00-d6ed-11e9-8520-ff05e66baa2a.png)
+similarity rises in late 2015, and become stable
+
+![w2v_1](https://user-images.githubusercontent.com/44984892/64904189-86964180-d6f0-11e9-8677-85b906e33052.png)
 
 **Unrelated words**
 
@@ -189,11 +190,49 @@ It bursts in early 2016 and exponentially decays (it is linear in log scale)
 |:-:|:-:|:-:|
 |โรงเรียน| roongriang | school|
 |สยาม| sayǎam | a name of city |
-|อาบ |àap | to take a shower
+|อาบ |àap | to take a shower | 
+
+similarity does not rise
 
 ![w2v_2](https://user-images.githubusercontent.com/44984892/64904134-a5480880-d6ef-11e9-9b1c-2ff74ed2fb5d.png)
 
+"to take a shower" rises a little probably because _nók_ begins to share the same PoS = VERB (distributions are similar)
+
 ### Serendipity
+
+![bat](https://user-images.githubusercontent.com/44984892/64904318-78e1bb80-d6f2-11e9-89c7-233e9e2dc123.png)
+
+at the beginning, _nók_ is mainly used in a sense of love
+
+- e.g. _nók ìik_ : “flirted but failed again”
+
+after that, meaning is gradually broadened to “miss"
+
+- e.g. _nók bàt_ : "miss the ticket"
+
+### Discussion
+
+- The word frequency is decreasing, but all of the three probabilistic measures become stable
+- It seems that word frequency shows just “Hit Phenomenon” (Ishi, 2012)
+- Even though the frequency of innovative usage is decreasing, but the “proportion” of  innovative usage does not decrease
+
+>**The lexical innovation ha already established in the linguistic system of Twitter space**
+
+**limitation**
+
+- Innovation is established in “linguistic system”, but the result did not mention any sociolinguistic factors
+- Not “how it diffuses”, but “whether diffused or not”
+- We cannot know total acceptance rate
+- For morphosyntactically identical polyseme (e.g. noun & noun), syntactic structure does not help
+- There is no robust PoS-tagger for Thai
+
+### Comparing three measures
+
+||advantage|disadvantage|
+|:-:|:-:|:-:|
+|conditional probability | needs only tweets that contain the target word |depends on syntactic structure, data A is unavailable to another word|
+|tweet level PMI | - | depends on syntactic structure, requires big data (data B)|
+|word embeddings | it shows meaning more directly | requires big data (data B) |
 
 ### Conclusion
 
