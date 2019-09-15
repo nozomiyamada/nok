@@ -111,7 +111,10 @@ def change(word1, word2='นก'):
             x.append(month)
         else:
             x.append(month.split('-')[-1])
-        y.append(cos_sim(model.wv[word1], model.wv[word2]))
+        try:
+            y.append(cos_sim(model.wv[word1], model.wv[word2]))
+        except:
+            y.append(0)
     for i in y:
         print(i)
     
@@ -130,8 +133,8 @@ def most():
         most_month(month)
 
 def most_month(month, k=20):
-    model = KeyedVectors.load_word2vec_format(f'/Volumes/NOZOMIUSB/processed/{month}sg.bin', binary=True)
-    results = model.wv.most_similar(positive=['นก'], topn=100)
+    model = KeyedVectors.load_word2vec_format(f'/Volumes/NOZOMIUSB/processed/{month}.bin', binary=True)
+    results = model.wv.most_similar(positive=['ดราม่า'], topn=100)
     i = 0
     # print('\n%s' % month)
     new_list = []

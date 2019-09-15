@@ -13,6 +13,17 @@ Proceedings of The 33rd Pacific Asia Conference on Language, Information and Com
   2. Pointwise Mutual Information at Tweet Level
   3. Diachronic Word Embeddings
 
+### Types of lecical innovation (1981 Sornig)
+  1. new word for new concept
+        > e.g. _smartphone_
+  2. new competitive word
+        > e.g. _ya_ vs. _you_
+  3. new meaning for existing word
+        > e.g. _star_ "celebrity"
+  4. meaning shift
+        > e.g. _gay_ "joyful" -> "homosexual man"
+
+The case of _nók_ is (3) **new meaning for existing word**
 ## Questions
 1. What kind of measure is effective for polysemy?
 2. How to quantify the progress of diffusion of nok?
@@ -30,8 +41,8 @@ tweets written in Thai : January 2012 - December 2018
 |2015 | 395,334 | 3,153,596 |
 |2016 | 778,243 | 3,434,185 |
 |2017 | 1,070,668 | 5,152,559 |
-|2018 | 891,636 | 3,556,596 |
-| **total** | **4,156,466** | **21,558,621**|
+|2018 | 891,636 | 4,718,447 |
+| **total** | **4,156,466** | **22,720,472**|
 
 - collected tweets every 10 minutes in order to prevent from being biased 
 - tokenizer : [`PyThaNLP 2.0.3`](https://github.com/PyThaiNLP/pythainlp) using Maximum-Matching algorithm (`engine='newmm'`)
@@ -198,6 +209,31 @@ similarity does not rise
 
 "to take a shower" rises a little probably because _nók_ begins to share the same PoS = VERB (distributions are similar)
 
+## Discussion
+
+- The word frequency is decreasing, but all of the three probabilistic measures become stable
+- It seems that word frequency shows just “Hit Phenomenon” (Ishi, 2012)
+- Even though the frequency of innovative usage is decreasing, but the “proportion” of  innovative usage does not decrease
+
+>**The lexical innovation has already established in the linguistic system of Twitter space**
+
+**limitation**
+
+- Innovation is established in “linguistic system”, but the result did not mention any sociolinguistic factors
+- Not “how it diffuses”, but “whether diffused or not”
+- We cannot know total acceptance rate
+- For morphosyntactically identical polyseme (e.g. noun & noun), syntactic structure does not help
+- Tokenizer cannot deal with new lexical entries
+- There is no robust PoS-tagger for Thai
+
+### Comparing three measures
+
+||advantage|disadvantage|
+|:-:|:-:|:-:|
+|conditional probability | needs only tweets that contain the target word |depends on syntactic structure, data A is unavailable to another word|
+|tweet level PMI | - | depends on syntactic structure, requires big data (data B)|
+|word embeddings | it shows meaning more directly | requires big data (data B) |
+
 ### Serendipity
 
 ![bat](https://user-images.githubusercontent.com/44984892/64904318-78e1bb80-d6f2-11e9-89c7-233e9e2dc123.png)
@@ -210,28 +246,6 @@ after that, meaning is gradually broadened to “miss"
 
 - e.g. _nók bàt_ : "miss the ticket"
 
-### Discussion
-
-- The word frequency is decreasing, but all of the three probabilistic measures become stable
-- It seems that word frequency shows just “Hit Phenomenon” (Ishi, 2012)
-- Even though the frequency of innovative usage is decreasing, but the “proportion” of  innovative usage does not decrease
-
->**The lexical innovation ha already established in the linguistic system of Twitter space**
-
-**limitation**
-
-- Innovation is established in “linguistic system”, but the result did not mention any sociolinguistic factors
-- Not “how it diffuses”, but “whether diffused or not”
-- We cannot know total acceptance rate
-- For morphosyntactically identical polyseme (e.g. noun & noun), syntactic structure does not help
-- There is no robust PoS-tagger for Thai
-
-### Comparing three measures
-
-||advantage|disadvantage|
-|:-:|:-:|:-:|
-|conditional probability | needs only tweets that contain the target word |depends on syntactic structure, data A is unavailable to another word|
-|tweet level PMI | - | depends on syntactic structure, requires big data (data B)|
-|word embeddings | it shows meaning more directly | requires big data (data B) |
+## Other Examples of Innovation
 
 
