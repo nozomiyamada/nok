@@ -44,7 +44,7 @@ tweets written in Thai : January 2012 - December 2018
 |2018 | 891,636 | 4,718,447 |
 | **total** | **4,156,466** | **22,720,472**|
 
-- collected tweets every 10 minutes in order to prevent from being biased 
+- collected tweets every 10 minutes in order to prevent from being biased (6 * 24 = 144 points a day)
 - tokenizer : [`PyThaNLP 2.0.3`](https://github.com/PyThaiNLP/pythainlp) using Maximum-Matching algorithm (`engine='newmm'`)
 
     ~~~python
@@ -191,7 +191,7 @@ It bursts in early 2016 and exponentially decays (it is linear in log scale)
 |เสียใจ | sǐacai | (to feel) sad |
 |ผิดหวัง | phìtwǎng | to be disappointed |
 
-similarity rises in late 2015, and become stable
+similarity rises in late 2015, and become stable (like S-cureve)
 
 ![w2v_1](https://user-images.githubusercontent.com/44984892/64904189-86964180-d6f0-11e9-8677-85b906e33052.png)
 
@@ -248,4 +248,7 @@ after that, meaning is gradually broadened to “miss"
 
 ## Other Examples of Innovation
 
+**ลำไย/lamyai/ and รำคาญ/ramkhaan/**
+
+![lamyai](https://user-images.githubusercontent.com/44984892/64915388-ca8c5380-d78f-11e9-9d97-0570192f908d.png)
 

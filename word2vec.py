@@ -5,8 +5,8 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import csv, re
 import numpy as np
-font = {"family":"THSarabun"}
-mpl.rc('font', **font)
+#font = {"family":"THSarabun"}
+#mpl.rc('font', **font)
 
 def trim(text):
     """
@@ -24,10 +24,10 @@ def trim(text):
     trim('นกนกนกนกนกนก')
     >> นกนกนก
     """
-    text = re.sub(r'([ก-๛a-zA-Z])\1{2}\1+', r'\1', text)
+    text = re.sub(r'([ก-๛a-zA-Z])\1{2}\1+', r'\1', text)  # shrink repetition
     text = re.sub(r'นกนก(นก)+', 'นกนกนก', text)
     text = re.sub(r'([ก-๛a-zA-Z]+)\1{2}\1+', r'\1', text)
-
+    text = re.sub(r'[#+-!?~,.:;*\'”"“=\\/\(\)]', '', text)  # remove punctuation 
     return text
 
 
@@ -81,7 +81,7 @@ def make_model(month, skipgram=0, epoch=3):
     sentences = word2vec.LineSentence(file)
     # CBOW: sg=0, skip-gram: sg=1
     if skipgram == 0:
-        model = word2vec.Word2Vec(sentences, sg=skipgram, size=300, min_count=5, window=10, iter=epoch)
+        model = word2vec.Word2Vec(sentences, sg=skipgram, size=300, min_count=5, window=5, iter=epoch)
         model.wv.save_word2vec_format('/Users/Nozomi/files/processed/{}.bin'.format(month, month), binary=True)
     elif skipgram == 1:
         model = word2vec.Word2Vec(sentences, sg=skipgram, size=300, min_count=5, window=5, iter=epoch)
@@ -132,9 +132,9 @@ def most():
     for month in months:
         most_month(month)
 
-def most_month(month, k=20):
+def most_month(month, k=20, query='นก'):
     model = KeyedVectors.load_word2vec_format(f'/Volumes/NOZOMIUSB/processed/{month}.bin', binary=True)
-    results = model.wv.most_similar(positive=['ดราม่า'], topn=100)
+    results = model.wv.most_similar(positive=[query], topn=100)
     i = 0
     # print('\n%s' % month)
     new_list = []
