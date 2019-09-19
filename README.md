@@ -130,6 +130,10 @@ use [`gensim 3.7.3`](https://radimrehurek.com/gensim/) and made word embeddings 
 
 ### [Raw Result (Google Spreadsheet)](https://docs.google.com/spreadsheets/d/13pWKNKzvn0-Fo3icXgtyXuTSDekcZstsReJ82wOvSqE/edit?usp=sharing)
 
+### Population
+The total number of tweeter of _nók_
+![image](https://user-images.githubusercontent.com/44984892/65207437-cd52b580-dabb-11e9-855a-eedaa091a33a.png)
+
 ### 0. Word Frequency
 
 - preliminaly test for general word
