@@ -14,11 +14,11 @@ Proceedings of The 33rd Pacific Asia Conference on Language, Information and Com
   3. Diachronic Word Embeddings
 
 ### Types of lecical innovation (1981 Sornig)
-  1. new word for new concept
+  1. new word for new concept (addition)
         > e.g. _smartphone_
   2. new competitive word
         > e.g. _ya_ vs. _you_
-  3. new meaning for existing word
+  3. new meaning for existing word (extension)
         > e.g. _star_ "celebrity"
   4. meaning shift
         > e.g. _gay_ "joyful" -> "homosexual man"
