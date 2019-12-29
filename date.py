@@ -1,19 +1,14 @@
 # every 10 minute in one hour
-min10 = []
-for i in range(24):
-    for j in range(6):
-        min10.append(f'{i}:{j}0:00')
-min10.append('0:00:00')
+min10 = [f'{i}:{j}0:00' for i in range(24) for j in range(6)] + ['0:00:00']  
+
+# every 20 minute in one hour
+min20 = [f'{i}:{2*j}0:00' for i in range(24) for j in range(3)] + ['0:00:00'] 
 
 # every 30 minute in one hour
-min30 = []
-for i in range(24):
-    for j in range(2):
-        min30.append(f'{i}:{3*j}0:00')
-min30.append('0:00:00')
+min30 = [f'{i}:{3*j}0:00' for i in range(24) for j in range(2)] + ['0:00:00']
 
 # every hour
-hours = [f'{i}:00:00' for i in range(24)] + ['0:00:00']
+min60 = [f'{i}:00:00' for i in range(24)] + ['0:00:00']
 
 year2010 = ['2010-{}-1'.format(i) for i in range(1, 13)] + ['2011-1-1']
 year2011 = ['2011-{}-1'.format(i) for i in range(1, 13)] + ['2012-1-1']
@@ -141,3 +136,16 @@ month2019_9 = ['2019-9-{}'.format(i) for i in range(1, 31)] + ['2019-10-1']
 month2019_10 = ['2019-10-{}'.format(i) for i in range(1, 32)] + ['2019-11-1']
 month2019_11 = ['2019-11-{}'.format(i) for i in range(1, 31)] + ['2019-12-1']
 month2019_12 = ['2019-12-{}'.format(i) for i in range(1, 32)] + ['2020-1-1']
+
+month2020_1 = ['2020-1-{}'.format(i) for i in range(1, 32)] + ['2020-2-1']
+month2020_2 = ['2020-2-{}'.format(i) for i in range(1, 30)] + ['2020-3-1']
+month2020_3 = ['2020-3-{}'.format(i) for i in range(1, 32)] + ['2020-4-1']
+month2020_4 = ['2020-4-{}'.format(i) for i in range(1, 31)] + ['2020-5-1']
+month2020_5 = ['2020-5-{}'.format(i) for i in range(1, 32)] + ['2020-6-1']
+month2020_6 = ['2020-6-{}'.format(i) for i in range(1, 31)] + ['2020-7-1']
+month2020_7 = ['2020-7-{}'.format(i) for i in range(1, 32)] + ['2020-8-1']
+month2020_8 = ['2020-8-{}'.format(i) for i in range(1, 32)] + ['2020-9-1']
+month2020_9 = ['2020-9-{}'.format(i) for i in range(1, 31)] + ['2020-10-1']
+month2020_10 = ['2020-10-{}'.format(i) for i in range(1, 32)] + ['2020-11-1']
+month2020_11 = ['2020-11-{}'.format(i) for i in range(1, 31)] + ['2020-12-1']
+month2020_12 = ['2020-12-{}'.format(i) for i in range(1, 32)] + ['2021-1-1']

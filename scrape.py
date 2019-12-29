@@ -1,54 +1,65 @@
 from time import sleep
 from selenium import webdriver
 from bs4 import BeautifulSoup
-from urllib.parse import unquote
-import re, csv, os
-import date
+import re, csv, os, glob
+from date import *
 
 class ScrapeTweet:
     def __init__(self, path, query=None, scroll_time=30):
-        self.path = path
+        """
+        request url - use : (%3A) and space (%20)
+        https://twitter.com/search?q=query%20parameter1%3Avalue%20parameter2%3Avalue
+        """
+        self.path = path  # '/Users/Nozomi/files/tweet/'
         self.scroll_time = scroll_time
         if query == None:
             self.url = 'https://twitter.com/search?q=lang%3Ath'
         else:
             self.url = f'https://twitter.com/search?q={query}'
 
-    def scrape(self, month, append=True, time_each_hour=1):
+    def scrape_tweet(self, month, times_per_hour=6, start_date=1): # times per hour = 6,3,2,1
         """
-        month: date.month2013_10 = ['2013-10-1', '2013-10-2',...]
+        month: month2013_10 = ['2013-10-1', '2013-10-2',...]
         """
-        driver = webdriver.Chrome()
-        directory = self.path + month[0].rsplit('-', 1)[0]
+        files = sorted(glob.glob(self.path + month[0].rsplit('-',1)[0] + '/*'))
+        print(files)
+        driver = webdriver.Firefox()
 
-        for day_i in range(len(month) - 1):
-            day_since = month[day_i] 
-            day_until = month[day_i]  # if the time is 23:50, override 'day_to' below
+        for day_idx in range(start_date-1, len(month)-1):
+            day_since = month[day_idx] 
+            day_until = month[day_idx]  # if the time is 23:50, override 'day_to' below
 
-            if append == True:
+            filename = f'{self.path}{month[0].rsplit("-",1)[0]}/{day_since}.tsv'
+            if filename in files: # if exists, append
                 # open file once for making tweet ID list
-                with open(f'{directory}/{day_since}.tsv', 'r', encoding='utf-8') as f:
-                    tweet_id_list = [line[1] for line in csv.reader(f, delimiter='\t')]
-                write_file = open(f'{directory}/{day_since}.tsv', 'a', encoding='utf-8')
-            elif append == False:
-                write_file = open(f'{directory}/{day_since}.tsv', 'w', encoding='utf-8')
-
+                with open(filename, 'r', encoding='utf-8') as f:
+                    tweet_id_exist = [line[1] for line in csv.reader(f, delimiter='\t')]
+                write_file = open(filename, 'a', encoding='utf-8')
+            else:
+                write_file = open(filename, 'w', encoding='utf-8')
+                tweet_id_exist = []
             writer = csv.writer(write_file, delimiter='\t', lineterminator='\n')
 
-            # loop for each hour in one day
-            repeat_times = 24 * time_each_hour
+            # loop for every x minute in one day
+            repeat_times = 24 * times_per_hour
+            time_list = {1:min60, 2:min30, 3:min20, 6:min10}[times_per_hour]
             for j in range(repeat_times):
                 if j == repeat_times - 1:  # override "since:2013-1-1_23:50:00_ICT until:2013-1-2_0:00:00_ICT"
-                    day_until = month[day_i+1]
+                    day_until = month[day_idx+1]
 
-                time_since, time_until = date.hours[j], date.hours[j+1]
+                time_since, time_until = time_list[j], time_list[j+1]
                 url = self.url + f'%20since%3A{day_since}_{time_since}_ICT%20until%3A{day_until}_{time_until}_ICT'
                 driver.get(url)
 
-            # scroll k times
-            for t in range(self.scroll_time):
-                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")  # scroll to the bottom
-            
+                # scroll k times
+                scrollheight = []
+                for t in range(self.scroll_time):
+                    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")  # scroll to the bottom
+                    scrollheight.append(driver.execute_script("return document.body.scrollHeight;"))
+                    sleep(1)
+                    if len(scrollheight) >= 3 and len(set(scrollheight[-3:])) == 1:
+                        break
+
             # scraping
             id_compile = re.compile('tweet js-stream-tweet .*')
             tweet_compile = re.compile('TweetTextSize .*')
@@ -59,20 +70,18 @@ class ScrapeTweet:
 
             # check banned tweet
             id_html_checked = [a for a in id_html if ('because it violates' not in a.text and 'has been withheld' not in a.text and 'This Tweet is unavailable' not in a.text)]
-            print(len(id_html_checked), len(tweet_html))
             for k in range(len(id_html_checked)):
                 user_id = id_html_checked[k].get('data-permalink-path').split('/status/')[0].strip('/')
                 tweet_id = id_html_checked[k].get('data-permalink-path').split('/status/')[-1]
                 tweet = tweet_html[k].text
                 line = [user_id, tweet_id, tweet]
-                if append and tweet_id not in tweet_id_list:
-                    writer.writerow(line)
-                else:
+                if tweet_id not in tweet_id_exist:
                     writer.writerow(line)
             write_file.close()
         driver.close()
 
-nok = ScrapeTweet('/Users/Nozomi/files/tweet_nok/', 'นก', 1)
+nok = ScrapeTweet('/Users/Nozomi/files/tweet_nok/', query='นก', scroll_time=5)
+random_tweet = ScrapeTweet('/Users/Nozomi/files/tweet/', scroll_time=30).scrape_tweet
 
 
 
