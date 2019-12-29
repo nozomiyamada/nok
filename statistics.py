@@ -124,10 +124,6 @@ def freq(year, *args:str):  # freq(2018 word1 word2)
             result += f'{c * denominator / token:.3f},' 
         print(result.strip(','))
 
-def freq_all(year1, year2, *args):
-    for y in range(year1, year2, *args):
-        freq(y, *args)
-
 def col_most(year_month, n = 20, query='นก'):
     # get file names
     #file = "/Users/Nozomi/files/processed/nok{}.tsv".format(year_month)

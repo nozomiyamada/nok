@@ -1,16 +1,19 @@
 # every 10 minute in one hour
-time = []
+min10 = []
 for i in range(24):
     for j in range(6):
-        time.append(f'{i}:{j}0:00')
-time.append('0:00:00')
+        min10.append(f'{i}:{j}0:00')
+min10.append('0:00:00')
 
 # every 30 minute in one hour
-time30 = []
+min30 = []
 for i in range(24):
     for j in range(2):
-        time30.append(f'{i}:{3*j}0:00')
-time30.append('0:00:00')
+        min30.append(f'{i}:{3*j}0:00')
+min30.append('0:00:00')
+
+# every hour
+hours = [f'{i}:00:00' for i in range(24)] + ['0:00:00']
 
 year2010 = ['2010-{}-1'.format(i) for i in range(1, 13)] + ['2011-1-1']
 year2011 = ['2011-{}-1'.format(i) for i in range(1, 13)] + ['2012-1-1']

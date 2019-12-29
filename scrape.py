@@ -3,14 +3,80 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from urllib.parse import unquote
 import re, csv, os
-
 import date
 
+class ScrapeTweet:
+    def __init__(self, path, query=None, scroll_time=30):
+        self.path = path
+        self.scroll_time = scroll_time
+        if query == None:
+            self.url = 'https://twitter.com/search?q=lang%3Ath'
+        else:
+            self.url = f'https://twitter.com/search?q={query}'
+
+    def scrape(self, month, append=True, time_each_hour=1):
+        """
+        month: date.month2013_10 = ['2013-10-1', '2013-10-2',...]
+        """
+        driver = webdriver.Chrome()
+        directory = self.path + month[0].rsplit('-', 1)[0]
+
+        for day_i in range(len(month) - 1):
+            day_since = month[day_i] 
+            day_until = month[day_i]  # if the time is 23:50, override 'day_to' below
+
+            if append == True:
+                # open file once for making tweet ID list
+                with open(f'{directory}/{day_since}.tsv', 'r', encoding='utf-8') as f:
+                    tweet_id_list = [line[1] for line in csv.reader(f, delimiter='\t')]
+                write_file = open(f'{directory}/{day_since}.tsv', 'a', encoding='utf-8')
+            elif append == False:
+                write_file = open(f'{directory}/{day_since}.tsv', 'w', encoding='utf-8')
+
+            writer = csv.writer(write_file, delimiter='\t', lineterminator='\n')
+
+            # loop for each hour in one day
+            repeat_times = 24 * time_each_hour
+            for j in range(repeat_times):
+                if j == repeat_times - 1:  # override "since:2013-1-1_23:50:00_ICT until:2013-1-2_0:00:00_ICT"
+                    day_until = month[day_i+1]
+
+                time_since, time_until = date.hours[j], date.hours[j+1]
+                url = self.url + f'%20since%3A{day_since}_{time_since}_ICT%20until%3A{day_until}_{time_until}_ICT'
+                driver.get(url)
+
+            # scroll k times
+            for t in range(self.scroll_time):
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")  # scroll to the bottom
+            
+            # scraping
+            id_compile = re.compile('tweet js-stream-tweet .*')
+            tweet_compile = re.compile('TweetTextSize .*')
+            html = driver.page_source.encode('utf-8')
+            soup = BeautifulSoup(html, "html.parser")  # get html
+            id_html = soup.find_all('div', class_=id_compile)  # get user id and tweet id
+            tweet_html = soup.find_all('p', class_=tweet_compile)  # get tweet and hash tag
+
+            # check banned tweet
+            id_html_checked = [a for a in id_html if ('because it violates' not in a.text and 'has been withheld' not in a.text and 'This Tweet is unavailable' not in a.text)]
+            print(len(id_html_checked), len(tweet_html))
+            for k in range(len(id_html_checked)):
+                user_id = id_html_checked[k].get('data-permalink-path').split('/status/')[0].strip('/')
+                tweet_id = id_html_checked[k].get('data-permalink-path').split('/status/')[-1]
+                tweet = tweet_html[k].text
+                line = [user_id, tweet_id, tweet]
+                if append and tweet_id not in tweet_id_list:
+                    writer.writerow(line)
+                else:
+                    writer.writerow(line)
+            write_file.close()
+        driver.close()
+
+nok = ScrapeTweet('/Users/Nozomi/files/tweet_nok/', 'นก', 1)
+
+
+
 def tweet_random(month, append=True, scroll=20, sleep_time=0.5):
-    """
-    month: date.month2013_10 = ['2013-10-1', '2013-10-2',...]
-    month[0].rsplit('-', 1) = ['2013-10', '1']
-    """
     driver = webdriver.Chrome()
     sleep(1)
     path = '/Users/Nozomi/files/tweet/tweet' + month[0].rsplit('-', 1)[0]
@@ -91,7 +157,7 @@ def tweet_random(month, append=True, scroll=20, sleep_time=0.5):
     driver.close()
 
 
-def nok(month, append=True, scroll=8, sleep_time=1, query='นก'):
+def tweet_nok(month, append=True, scroll=8, sleep_time=1, query='นก'):
     """
     month: date.month2013_10 = ['2013-10-1', '2013-10-2',...]
     month[0].rsplit('-', 1) = ['2013-10', '1']
@@ -149,12 +215,13 @@ def nok(month, append=True, scroll=8, sleep_time=1, query='นก'):
             tweet_one_day += len(id_html)
 
             # check banned tweet
-            id_html_checked = [a for a in id_html if ('違反しているため' not in a.text and 'because it violates' not in a.text and 'has been withheld' not in a.text and 'This Tweet is unavailable' not in a.text)]
-
+            id_html_checked = [a for a in id_html if ('because it violates' not in a.text and 'has been withheld' not in a.text and 'This Tweet is unavailable' not in a.text)]
+            print(len(id_html_checked, len(tweet_html)))
             for k in range(len(id_html_checked)):
                 user_id = id_html_checked[k].get('data-permalink-path').split('/status/')[0].strip('/')
                 tweet_id = id_html_checked[k].get('data-permalink-path').split('/status/')[-1]
                 tweet = tweet_html[k].text
+
                 """
                 if tweet_html[k].find('a') is not None:
                     hashtags = tweet_html[k].find_all('a')
