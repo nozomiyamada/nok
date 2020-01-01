@@ -126,7 +126,6 @@ def change(word1, word2='นก'):
     plt.show()
     
     
-    
 # print most similar word of each month
 def most():
     for month in months:
