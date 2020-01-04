@@ -1,9 +1,10 @@
 from collections import Counter
 import re, os, csv, random, glob
+import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt 
+plt.style.use('ggplot')
 from pythainlp import word_tokenize
-
-path = '/Volumes/NOZOMIUSB/'
 
 class TweetAnalyze:
 
@@ -27,10 +28,13 @@ class TweetAnalyze:
         trim('นกนกนกนกนกนก')
         >> นก
         """
+        text = re.sub(r'555+\+?', '555', text)
         text = re.sub(r'([ก-๛a-zA-Z])\1{2}\1+', r'\1', text)
         text = re.sub(r'นก(นก)+', 'นก', text)
         text = re.sub(r'าา+', r'า', text)  # more than 2 repetition
         text = re.sub(r'([ก-๛a-zA-Z]+)\1\1+', r'\1', text)  # more than 3 repetition
+        text = re.sub(r'@\S+ ', '', text)
+        text = re.sub(r'https?://\S+\b', '', text)
         return text
 
     def tokenize(self, year_month:str, data_a=True):
@@ -39,14 +43,14 @@ class TweetAnalyze:
         :return: tokenize all tweets in the month and combined into one file
         """
         # get file names
-        files = glob.glob(f'{self.path}/{year_month}/*.tsv') # /2019-1/2019-1-1.tsv
+        files = sorted(glob.glob(f'{self.path}/{year_month}/*.tsv')) # /2019-1/2019-1-1.tsv
         save_file = open(f'{self.path}/tokenized/{year_month}.tsv', 'w', encoding='utf-8')
         writer = csv.writer(save_file, delimiter='\t', lineterminator='\n')
 
         for file in files:
             print(file)  # output current file
             with open(file, 'r', encoding='utf-8') as f:
-                tokenized = [word_tokenize(trim(tweet[-1]), keep_whitespace=False) for tweet in csv.reader(f, delimiter='\t')]
+                tokenized = [word_tokenize(self.trim(tweet[-1]), keep_whitespace=True) for tweet in csv.reader(f, delimiter='\t')]
                 writer.writerows(tokenized)
         save_file.close()
 
@@ -62,20 +66,16 @@ class TweetAnalyze:
                 tweet_count += len(list(csv.reader(f, delimiter='\t')))
         return tweet_count
 
-    def all_tweet_year(self, year):
+    def count_tweet_all(self, year:int):
         """
         all tweet count in the year
         """
-        tweet_count, tweet_count2 = 0, 0
+        tweet_count = 0
         for i in range(1,13):
-            a, b = count_tweet(str(year) + f'-{i}')
-            tweet_count += a
-            tweet_count2 += b
-        print(f'tweet nok: {tweet_count}')
-        print(f'random tweet: {tweet_count2}')
+            tweet_count += self.count_tweet(f'{year}-{i}')
+        print(f'all tweets of {year}: {tweet_count}')
 
-
-    def freq(self, year, *args:str):  # freq(2018 word1 word2)
+    def freq(self, year, *args:str):  # freq(2018, word1, word2...)
         """
         :*args: query words
         calculate word frequency from random tweet file
@@ -85,11 +85,11 @@ class TweetAnalyze:
 
         # iterate month
         for month in range(1, 13):
-            file = f"{path}processed/random{year}-{month}.tsv"
+            filename = f"{self.path}/tokenized/{year}-{month}.tsv"
             token, count = 0, [0] * len(args)
-            with open(file, 'r', encoding='utf-8') as f:
+            with open(filename, 'r', encoding='utf-8') as f:
                 for tweet in csv.reader(f, delimiter='\t'):  # iterate tokenized tweet
-                    token += len([x for x in tweet if (x != '\n' and x != '' and x != ' ')])  # token in one tweet (except space)
+                    token += len([x for x in tweet if x not in ['\n','',' ','  ','   ']])  # token in one tweet (except space)
                     for i, word in enumerate(args):
                         count[i] += tweet.count(word)
             result = ''
@@ -97,68 +97,82 @@ class TweetAnalyze:
                 result += f'{c * denominator / token:.3f},' 
             print(result.strip(','))
 
-    def col_most(self, year_month, n = 20, query='นก'):
-        # get file names
-        #file = "/Users/Nozomi/files/processed/nok{}.tsv".format(year_month)
-        file = f"/Volumes/NOZOMIUSB/processed/nok{year_month}.tsv"
-
-        col_b, col_a = Counter(), Counter()
-        count_b, count_a = 0, 0
-
-        with open(file, 'r', encoding='utf-8') as f:
-            for tweet in csv.reader(f, delimiter='\t'): # loop for tokenized tweet
+    def bigram_most(self, year_month, topn=20, query='นก'):
+        filename = f"{self.path}/tokenized/{year_month}.tsv"
+        col_before, col_after = Counter(), Counter()
+        count_before, count_after = 0, 0
+        with open(filename, 'r', encoding='utf-8') as f:
+            for tweet in csv.reader(f, delimiter='\t'): # iterate tokenized tweet
+                if len(tweet) <= 1:  # tweet with only one token
+                    continue
                 for i, word in enumerate(tweet):
                     if word == query:
-                        if len(tweet) == 1:  # tweet with only one token
-                            pass
-
                         # initial position
-                        elif i == 0:
-                            if tweet[i+1] != '\n' and not tweet[i+1].startswith(' '):
-                                col_a[tweet[i+1]] += 1
-                                count_a += 1
-
-                        # final position
+                        if i == 0:
+                            word_after = tweet[i+1]
+                            if word_after not in ['\n', '', ' ']:
+                                col_after[word_after] += 1
+                                count_after += 1
                         elif i == len(tweet)-1:
-                            if tweet[i-1] != '\n' and not tweet[i-1].startswith(' '):
-                                col_b[tweet[i-1]] += 1
-                                count_b += 1
+                            word_before = tweet[i-1]
+                            if word_before not in ['\n', '', ' ']:
+                                col_before[word_before] += 1
+                                count_before += 1
                         else:
-                            if tweet[i-1] != '\n' and not tweet[i-1].startswith(' '):
-                                col_b[tweet[i-1]] += 1
-                                count_b += 1
-                            if tweet[i+1] != '\n' and not tweet[i+1].startswith(' '):
-                                col_a[tweet[i+1]] += 1
-                                count_a += 1
-        result = ''
-        #for tpl in col_b.most_common(n):
-        for tpl in col_a.most_common(n):
-            result += tpl[0] + ': ' + str(tpl[1]) + ','
-        print(result.strip(','))
+                            word_after = tweet[i+1]
+                            if word_after not in ['\n', '', ' ']:
+                                col_after[word_after] += 1
+                                count_after += 1
+                            word_before = tweet[i-1]
+                            if word_before not in ['\n', '', ' ']:
+                                col_before[word_before] += 1
+                                count_before += 1
+        print(f'before: {count_before}')
+        print(col_before.most_common(topn))
+        print(f'\nafter: {count_after}')
+        print(col_after.most_common(topn))
 
-    def col_pre(self, year, query, total=True):
+    def plot_col(self, year_from=2013, year_to=2018, *collocation):
+        collocation = sorted(collocation)
+        df_before = pd.DataFrame(columns=collocation) # empty dataframe
+        df_after = pd.DataFrame(columns=collocation) # empty dataframe
+        for year in range(year_from, year_to+1):
+            for month in range(1, 13):
+                filename = f"{self.path}/tokenized/{year}-{month}.tsv"
+                col_before, col_after = {c:0 for c in collocation}, {c:0 for c in collocation}
+                count_before, count_after = 0, 0
+                with open(filename, 'r', encoding='utf-8') as f:
+                    for tweet in csv.reader(f, delimiter='\t'): # iterate tokenized tweet
+                        if len(tweet) <= 1:  # tweet with only one token
+                            continue
+                        for i, word in enumerate(tweet):
+                            if word in collocation:
+                                # initial position
+                                if i == 0:
+                                    word_after = tweet[i+1]
+                                    if word_after not in ['\n', '', ' ']:
+                                        col_after[word][word_after] = col_after[word].get(word_after, 0) + 1
+                                        count_after += 1
+                                elif i == len(tweet)-1:
+                                    word_before = tweet[i-1]
+                                    if word_before not in ['\n', '', ' ']:
+                                        col_after[word][word_before] = col_after[word].get(word_before, 0) + 1
+                                        count_before += 1
+                                else:
+                                    word_after = tweet[i+1]
+                                    if word_after not in ['\n', '', ' ']:
+                                        col_after[word][word_after] = col_after[word].get(word_after, 0) + 1
+                                        count_after += 1
+                                    word_before = tweet[i-1]
+                                    if word_before not in ['\n', '', ' ']:
+                                        col_after[word][word_before] = col_after[word].get(word_before, 0) + 1
+                                        count_before += 1
+                df_before.loc[f'{year}-{month}'] = [col_before[q]/count_before for q in query]
+                df_after.loc[f'{year}-{month}'] = [col_after[q]/count_after for q in query]
         
-        for month in range(1, 13):
+        plt.plot(df_before)
+        plt.show()
 
-            col = 0
-            total_col = 0
-            file = f"/Volumes/NOZOMIUSB/processed/nok{year}.tsv"  # for nok
-            #file = "/Users/Nozomi/files/processed/random{0}-{1}.tsv".format(year, month)  # for random
-
-            with open(file, 'r', encoding='utf-8') as f:
-                for tweet in csv.reader(f, delimiter='\t'):  # loop for tokenized tweet
-                    for i, word in enumerate(tweet):
-                        if word == 'นก':
-                            if i > 0 and tweet[i-1] != '\n' and not tweet[i-1].startswith(' '):
-                                total_col += 1
-                                if tweet[i-1] == query:
-                                    col += 1
-
-            if total==True:
-                print(total_col, col)
-            else:
-                print(col)
-                
     def col_fol(self, year, query, total=True):
         
         for i in range(1, 13):
@@ -305,3 +319,5 @@ class TweetAnalyze:
             print(pmi)
 
 
+### instantiation ### 
+NOK = TweetAnalyze('/Users/Nozomi/files/tweet_nok')
