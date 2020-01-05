@@ -42,10 +42,11 @@ tweets written in Thai : January 2012 - December 2018
 |2016 | 778,243 | 3,434,185 |
 |2017 | 1,070,668 | 5,152,559 |
 |2018 | 891,636 | 4,718,447 |
+|2019 | | |
 | **total** | **4,156,466** | **22,720,472**|
 
 - collected tweets every 10 minutes in order to prevent from being biased (6 * 24 = 144 points a day)
-- tokenizer : [`PyThaNLP 2.0.3`](https://github.com/PyThaiNLP/pythainlp) using Maximum-Matching algorithm (`engine='newmm'`)
+- tokenizer : [`PyThaNLP 2.1.dev7`](https://github.com/PyThaiNLP/pythainlp) using Maximum-Matching algorithm (`engine='newmm'`)
 
     ~~~python
     from pythainlp import word_tokenizer
