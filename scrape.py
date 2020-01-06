@@ -17,11 +17,11 @@ class ScrapeTweet:
         else:
             self.url = f'https://twitter.com/search?q={query}'
 
-    def scrape_tweet(self, month, times_per_hour=6, start_date=1): # times per hour = 6,3,2,1
+    def scrape_tweet(self, month, start_date=1, times_per_hour=6): # times per hour = 6,3,2,1
         """
         month: month2013_10 = ['2013-10-1', '2013-10-2',...]
         """
-        files = sorted(glob.glob(self.path + month[0].rsplit('-',1)[0] + '/*'))
+        files = sorted(glob.glob(self.path + month[0].rsplit('-',1)[0] + '/*.tsv'))
         print(sorted([x.rsplit('/')[-1] for x in files]))
         driver = webdriver.Firefox()
 
@@ -92,10 +92,10 @@ class ScrapeTweet:
 ### instantiation ###
 
 # scrape tweets that contain "nok"
-nok = ScrapeTweet('/Users/Nozomi/gdrive/scraping/tweet_nok/', query='นก', scroll_time=30).scrape_tweet
+nok = ScrapeTweet('/Users/Nozomi/gdrive/scraping/tweet/tweet_nok/', query='นก', scroll_time=30).scrape_tweet
 
 # scrape random tweets
-random_tweet = ScrapeTweet('/Users/Nozomi/gdrive/scraping/tweet/', scroll_time=30).scrape_tweet
+random_tweet = ScrapeTweet('/Users/Nozomi/gdrive/scraping/tweet/random/', scroll_time=30).scrape_tweet
 
 
 def tweet_nok(month, append=True, scroll=8, sleep_time=1, query='นก'):
