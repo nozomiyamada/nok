@@ -92,10 +92,10 @@ class ScrapeTweet:
 ### instantiation ###
 
 # scrape tweets that contain "nok"
-nok = ScrapeTweet('/Users/Nozomi/files/tweet_nok/', query='นก', scroll_time=30).scrape_tweet
+nok = ScrapeTweet('/Users/Nozomi/gdrive/scraping/tweet_nok/', query='นก', scroll_time=30).scrape_tweet
 
 # scrape random tweets
-random_tweet = ScrapeTweet('/Users/Nozomi/files/tweet/', scroll_time=30).scrape_tweet
+random_tweet = ScrapeTweet('/Users/Nozomi/gdrive/scraping/tweet/', scroll_time=30).scrape_tweet
 
 
 def tweet_nok(month, append=True, scroll=8, sleep_time=1, query='นก'):
