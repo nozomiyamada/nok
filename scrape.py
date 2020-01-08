@@ -21,7 +21,7 @@ class ScrapeTweet:
         """
         month: month2013_10 = ['2013-10-1', '2013-10-2',...]
         """
-        files = sorted(glob.glob(self.path + month[0].rsplit('-',1)[0] + '/*'))
+        files = sorted(glob.glob(self.path + month[0].rsplit('-',1)[0] + '/*.tsv'))
         print(sorted([x.rsplit('/')[-1] for x in files]))
         driver = webdriver.Firefox()
 
