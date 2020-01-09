@@ -282,5 +282,8 @@ class AnalyzeTweet:
         plt.show()
 
 
-### instantiation ### 
-NOK = AnalyzeTweet('/Users/Nozomi/files/tweet_nok')
+### instantiation ###
+if os.name == 'nt': # for windows
+    NOK = AnalyzeTweet('F:/gdrive/scraping/tweet/tweet_nok')
+else:
+    NOK = AnalyzeTweet('/Users/Nozomi/gdrive/scraping/tweet/tweet_nok')
