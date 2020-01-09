@@ -1,5 +1,6 @@
 from time import sleep
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 from bs4 import BeautifulSoup
 import re, csv, os, glob
 from date import *
@@ -23,7 +24,9 @@ class ScrapeTweet:
         """
         files = sorted(glob.glob(self.path + month[0].rsplit('-',1)[0] + '/*.tsv'))
         print(sorted([x.rsplit('/')[-1] for x in files]))
-        driver = webdriver.Firefox()
+        options = Options()
+        options.add_argument('-headless')
+        driver = webdriver.Firefox(firefox_options=options)
 
         for day_idx in range(start_date-1, len(month)-1):
             day_since = month[day_idx] 
