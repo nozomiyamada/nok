@@ -146,6 +146,8 @@ class AnalyzeTweet:
         for year in range(year_from, year_to+1):  # iterate each year
             for month in range(1, 13):
                 filename = f"{self.path}/tokenized/{year}-{month}.tsv"
+                if not os.path.exists(filename):
+                    break
                 col_count = {c:0 for c in words}
                 token_count = 0
                 with open(filename, 'r', encoding='utf-8') as f:
@@ -167,7 +169,7 @@ class AnalyzeTweet:
                                     if word_after not in ['\n', '', ' ', '  ']:
                                         col_count[word_after] = col_count.get(word_after, 0) + 1
                                         token_count += 1
-                df.loc[f'{year}-{month}'] = [col_count[w]*100/token_count for w in words]
+                df.loc[f'{year}-{month}'] = [col_count[w]*100/token_count if token_count > 0 else 0 for w in words]
         print(df)
         plt.rcParams['font.family'] = 'Ayuthaya'
         plt.plot(df)
@@ -177,6 +179,7 @@ class AnalyzeTweet:
         else:
             plt.title(f'Following Word of {query}')
         plt.legend(df.columns)
+        plt.xticks(np.arange(len(df.index))[::4], df.index[::4], rotation=90, size='small')
         plt.show()
 
     def search_col_year(self, year, query1, query2):
@@ -217,6 +220,7 @@ class AnalyzeTweet:
         plt.plot(df)
         plt.ylabel('number of tweeter')
         plt.title(f'{query1} {query2}')
+        plt.xticks(np.arange(len(df.index))[::4], df.index[::4], rotation=90, size='small')
         plt.legend(df.columns)
         plt.show()
 
@@ -285,5 +289,7 @@ class AnalyzeTweet:
 ### instantiation ###
 if os.name == 'nt': # for windows
     NOK = AnalyzeTweet('F:/gdrive/scraping/tweet/tweet_nok')
+    RND = AnalyzeTweet('F:/gdrive/scraping/tweet/random')
 else:
     NOK = AnalyzeTweet('/Users/Nozomi/gdrive/scraping/tweet/tweet_nok')
+    RND = AnalyzeTweet('/Users/Nozomi/gdrive/scraping/tweet/random')
